@@ -1,0 +1,141 @@
+.search-item {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+.search-dropdown {
+    position: relative;
+}
+
+.search-item:first-child {
+    width: calc(15% - 20px);
+}
+
+.search-item:nth-child(2) {
+    width: calc(25% - 20px);
+}
+
+
+.search-item:nth-child(n+3) {
+    width: calc(15% - 20px);
+}
+
+
+.search-item button {
+    width: 100%;
+}
+
+.search-item button span {
+    font-size: 15px;
+    text-transform: capitalize !important;
+    color: black;
+    line-height: 1.3;
+}
+
+.search-item button:hover {
+    background-color: transparent;
+}
+
+.search-item .search-input {
+    width: 100%;
+    background: #f3f4f7;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    padding-left: 5px;
+}
+
+.search-item .search-input svg {
+    font-size: 16px;
+    width: 10%;
+}
+
+.search-item .search-input input {
+    background-color: transparent !important;
+    outline: none !important;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.8);
+    width: 90%;
+    border: 0px !important;
+    padding: 0 10px 0 0px;
+}
+
+.separator-search {
+    width: 1px;
+    background-color: #ccc;
+    height: 30px;
+    margin: 0 10px 0 18px;
+    flex-shrink: 0;
+}
+
+.search-category {
+    height: 45px;
+    background: rgba(0, 0, 0, 0.9) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+}
+
+.search-category span {
+    color: #fff !important;
+}
+
+.dropdown-list {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    border-radius: 8px;
+    padding: 0px !important;
+    position: absolute !important;
+    top: 110%;
+    left: 0px;
+    z-index: 100 !important;
+    background: #fff;
+    visibility: hidden;
+    transition: all .2s ease-in-out;
+    opacity: 0;
+    max-height: 0;
+}
+
+.dropdown-list.open {
+    max-height: 250px;
+    visibility: inherit;
+    opacity: 1;
+}
+
+.css-cveggr-MuiListItemIcon-root {
+    min-width: 0px !important;
+}
+
+.css-cokf1l-MuiListItemIcon-root {
+    min-width: 0px !important;
+}
+
+.search-action button {
+    width: 70% !important;
+    border-radius: 18px;
+    height: 35px;
+}
+
+.search-action button span {
+    color: #1976d2;
+}
+
+.search-action .btn-refresh{
+    width: 30% !important;
+}
+
+.btn-refresh .MuiButton-root {
+    width: 35px !important;
+    height: 35px;
+    border-radius: 50%;
+    min-width: 0;
+    padding: 0;
+    background-color: #d7ebff;
+}
+.btn-refresh .MuiButton-root:hover {
+    background-color: #1976d2;
+}
+
+.btn-refresh .MuiButton-root:hover svg {
+    color: #fff;
+}

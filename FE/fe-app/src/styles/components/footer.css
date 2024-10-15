@@ -1,0 +1,89 @@
+footer .footer-link .menu-footer .title,
+footer .footer-contact .transactions .title {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+footer>.footer-link>.container>.row>div {
+    flex: 0 0 20% !important;
+    max-width: 20% !important;
+}
+
+footer .footer-link .menu-footer .links ul {
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+}
+
+footer .footer-link .menu-footer .links ul li {
+    margin-bottom: 10px;
+}
+
+footer .footer-link .menu-footer .links ul li a {
+    text-decoration: none;
+    color: #000;
+    font-size: 16px;
+}
+
+footer .footer-link .menu-footer .links ul li a:hover {
+    color: #E21F1D;
+}
+
+footer .footer-contact .footer-contact-info p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+footer .footer-contact .transactions .img {
+    width: 40%;
+    height: 40px;
+}
+
+footer .footer-contact .transactions .img img{
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.form-contact {
+    width: 90%;
+    padding: 35px 100px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.footer-contact h3 {
+    font-size: 32px;
+    margin-bottom: 35px;
+}
+
+.footer-contact input[type='text'] {
+    padding: 15px 90px 15px 20px;
+    border-radius: 25px;
+    font-size: 18px;
+    border: none;
+    outline: none;
+}
+
+.footer-contact {
+    position: relative;
+}
+
+.form-submit {
+    position: relative;
+}
+
+.form-submit button {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #E21F1D;
+    border-radius: 20px;
+}

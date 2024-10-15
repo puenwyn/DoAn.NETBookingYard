@@ -1,0 +1,41 @@
+nav {
+    background: #f3f4f7;
+    padding: 10px 0px;
+}
+
+nav .header-nav {
+    justify-content: space-around;
+}
+
+nav .header-nav ul {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+nav .header-nav ul li a {
+    text-decoration: none;
+}
+
+nav .header-nav ul li a button {
+    font-size: 15px;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.8);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    transition: all 0.2s ease-in-out;
+    border-radius: 10px;
+    text-transform: capitalize !important;
+}
+
+nav .header-nav ul li a:hover button {
+    background: rgb(255, 205, 205);
+    color: #E21F1D;
+}
+
+nav .header-nav .submenu {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}

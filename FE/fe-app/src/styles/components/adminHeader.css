@@ -1,0 +1,33 @@
+.admin-header {
+    width: 100%;
+    background-color: transparent;
+}
+
+.admin-option img {
+    height: 100%;
+}
+
+.admin-avatar {
+    background: url('../../../public/assets/pancake.jpg');
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border-radius: 50px;
+    position: relative;
+    cursor: pointer;
+}
+
+.admin-active {
+    height: 12px;
+    width: 12px;
+    border-radius: 50px;
+    background-color: #2F9A48;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border: white 2px solid;
+}
+
+.admin-avatar:hover {
+    opacity: 0.8;
+}

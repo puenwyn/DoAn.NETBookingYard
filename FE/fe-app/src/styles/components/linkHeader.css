@@ -1,0 +1,30 @@
+.link-header .links {
+    padding: 8px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start
+}
+.link-header .links a{
+    text-decoration: none;
+    color: #7E7E7E;
+    font-size: 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.link-header .links a:hover {
+    color: black;
+}
+
+.link-header .links a.active {
+    color: black;
+}
+
+.link-header .links a:nth-child(n+2)::before {
+    content: '>';
+    position: absolute;
+    top: 0;
+    left: -15px;
+}

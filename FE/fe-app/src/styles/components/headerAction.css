@@ -1,0 +1,132 @@
+.header-actions {
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+.header-action-item {
+    width: auto;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+.header-action-item:hover .content {
+    visibility: inherit;
+    opacity: 1;
+    top: 110%;
+}
+
+.content {
+    position: absolute;
+    top: 130%;
+    left: 50%;
+    min-width: 250px;
+    transform: translateX(-50%);
+    padding: 10px;
+    border-radius: 10px;
+    visibility: hidden;
+    transition: all .3s ease-in-out;
+    opacity: 0;
+    z-index: 100;
+    background-color: #fff;
+}
+
+.header-actions a {
+    text-decoration: none;
+    width: auto;
+    padding: 0;
+}
+
+.header-actions a button {
+    width: auto;
+    height: 50px;
+}
+
+.header-actions a button:hover {
+    background-color: transparent;
+}
+
+.header-actions a button:hover .icon-text {
+    color: #c33;
+}
+
+.header-actions a button:hover .icon-action {
+    color: #c33;
+}
+
+.header-actions a button .icon-action {
+    font-size: 15px;
+    color: #000;
+}
+
+.header-actions a button .icon-text {
+    font-size: 15px;
+    text-transform: capitalize !important;
+    color: #000
+}
+
+.btn-action a button{
+    border-radius: 20px;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 500;
+    height: 45px;
+    text-transform: capitalize;
+}
+
+.btn-action  a {
+    display: block;
+    width: 100%;
+}
+
+.btn-login button{
+    background-color: #E21F1D;
+    border: 1px solid #fff;
+    color: #fff;
+    width: 100%;
+}
+
+.btn-register button{
+    color: #000;
+}
+
+.btn-register:hover button{
+    color: rgb(42, 42, 118);
+    text-decoration: underline;
+}
+
+hr {
+    margin-top: 0px;
+}
+
+.btn-login button:hover {
+    border: 1px solid #E21F1D;
+    color: #E21F1D;
+}
+
+.content ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+.content ul li {
+    list-style: none;
+    padding: 5px 10px;
+}
+
+.content ul li:hover a {
+    color: #E21F1D;
+}
+
+.content ul li a {
+    text-decoration: none;
+    color: #000;
+    height: auto;
+    width: 100%;
+    display: inline-block;
+}
+
+.content ul li a span {
+    font-size: 17px;
+}

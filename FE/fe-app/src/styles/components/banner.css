@@ -1,0 +1,27 @@
+.banner {
+    background: rgb(243, 244, 247);
+}
+
+.banner .banner-item {
+    height: 200px;
+    position: relative;
+}
+
+.banner .banner-item .item {
+    height: 100%;
+}
+
+.banner .item a img {
+    width: 100%;
+    height: 100%;
+    object-position: right;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.banner .banner-item .banner-content {
+    position: absolute;
+    top: 50%;
+    left: 50px;
+    transform: translateY(-50%);
+}

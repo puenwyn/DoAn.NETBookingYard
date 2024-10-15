@@ -1,0 +1,22 @@
+.header-top {
+    padding: 15px 0px;
+    background-color: #fff;
+}
+
+.header-top .logo img {
+    height: 44px;
+    object-fit: contain;
+}
+
+.header-top > .container > .row > div:nth-child(1) {
+    max-width: 280px;
+}
+
+.header-top > .container > .row > div:nth-child(2) {
+    flex-basis: calc(100% - 630px);
+    max-width: calc(100% - 630px);
+}
+
+.header-top > .container > .row > div:nth-child(3) {
+    max-width: 350px;
+}

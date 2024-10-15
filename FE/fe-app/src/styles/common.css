@@ -1,0 +1,362 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Lato", sans-serif;
+}
+
+@media (min-width: 1500px) {
+
+    .container,
+    .container-lg,
+    .container-md,
+    .container-sm,
+    .container-xl {
+        max-width: 1420px;
+    }
+}
+
+.container {
+    padding: 0px 10px;
+}
+
+.row {
+    flex-wrap: wrap;
+}
+
+::-webkit-scrollbar {
+    width: 5px !important;
+    height: 5px !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ccc !important;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent !important;
+}
+
+.display-image-background {
+    position: relative;
+}
+
+.display-image-background .image-gallery {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.7);
+    /* Sử dụng rgba cho nền trong suốt */
+    border: white 1px solid;
+    padding: 5px 10px;
+    cursor: pointer !important;
+}
+
+.image-gallery:hover {
+    color: rgb(30, 108, 243);
+    border: rgb(30, 108, 243) 1px solid;
+}
+
+.image-display {
+    display: grid;
+    grid-template-rows: repeat(11, 8fr);
+    grid-template-columns: repeat(12, 8fr);
+    grid-gap: 10px;
+    max-height: 400PX;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.image-display .inner-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.image-display .inner-image:nth-child(1) {
+    grid-row: span 7;
+    grid-column: span 8;
+    position: relative;
+}
+
+.image-display .inner-image:nth-child(2) {
+    grid-row: span 5;
+    grid-column: span 4;
+    position: relative;
+}
+
+.image-display .inner-image:nth-child(3) {
+    grid-row: span 6;
+    grid-column: span 4;
+    position: relative;
+}
+
+.image-display .inner-image:nth-child(4) {
+    grid-row: span 4;
+    grid-column: span 3;
+    position: relative;
+}
+
+.image-display .inner-image:nth-child(5) {
+    grid-row: span 4;
+    grid-column: span 5;
+    position: relative;
+}
+
+.detail-expand {
+    border-radius: 8px;
+}
+
+@supports (position: sticky) {
+    .booking-required {
+        position: sticky;
+        top: 1%;
+        z-index: 1020;
+    }
+}
+
+.day-of-week {
+    width: 50px;
+    height: 60px;
+    border: rgb(235, 235, 235) 1px solid;
+    border-radius: 8px;
+}
+
+.booking-dayofweek .dayactive {
+    width: auto;
+    border: rgb(30, 108, 243) 1px solid;
+    background-color: rgb(30, 108, 243);
+    color: white;
+}
+
+.time {
+    width: 200px !important;
+    height: 60px;
+    border: rgb(235, 235, 235) 1px solid;
+    border-radius: 8px;
+}
+
+.comment-info {
+    border-top: rgb(235, 235, 235) 1px solid;
+    border-bottom: rgb(235, 235, 235) 1px solid;
+}
+
+.progress-bar {
+    width: 50%;
+    /* Chiếm 50% chiều rộng ban đầu */
+    height: 10px;
+    background-color: lightgray;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* Khi màn hình nhỏ hơn 768px, thanh sẽ chiếm 100% chiều rộng */
+@media (max-width: 768px) {
+    .progress-bar {
+        width: 100%;
+    }
+}
+
+.filled-bar {
+    height: 100%;
+    background-color: rgb(230, 231, 236);
+}
+
+.qanda-area {
+    width: 100%;
+    /* Đảm bảo container chính rộng 100% */
+}
+
+.qanda-text {
+    width: 100%;
+    /* Đảm bảo div chứa textarea chiếm toàn bộ chiều rộng */
+    display: flex;
+    padding: 0;
+    /* Loại bỏ padding để border textarea khớp với div */
+}
+
+
+.qanda-text textarea {
+    width: 100%;
+    /* Chiếm toàn bộ chiều rộng của thẻ div */
+    padding: 10px;
+    /* Thêm padding bên trong textarea */
+    box-sizing: border-box;
+    /* Đảm bảo chiều rộng tính cả padding */
+    border: none !important;
+    /* Ẩn border */
+    outline: none !important;
+    /* Ẩn outline khi focus */
+    box-shadow: none !important;
+    /* Loại bỏ bất kỳ bóng nào */
+    resize: none;
+    /* Nếu bạn không muốn cho phép thay đổi kích thước */
+}
+
+.wrap-form {
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+@media (max-width: 960px) {
+    .wrap-form {
+        flex-direction: column;
+        /* Đặt theo chiều dọc trên màn hình nhỏ */
+    }
+
+    .curved-container {
+        display: none;
+        /* Ẩn phần hình cong khi thu nhỏ */
+    }
+
+    .form-box {
+        width: 100%;
+        /* Chiếm toàn bộ chiều rộng trên màn hình nhỏ */
+    }
+}
+
+.curved-container {
+    width: 450px;
+    /* Độ rộng tối đa */
+    height: 480px;
+}
+
+.gradient-container {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../public/assets/sports.jpg');
+    background-size: cover;
+    clip-path: ellipse(100% 98% at 0 50%);
+    color: white;
+    /* Màu chữ */
+    text-align: center;
+    /* Căn giữa chữ */
+}
+
+.form-box {
+    width: 450px;
+    height: 480px;
+}
+
+.form-custom .input-box {
+    position: relative;
+    height: 30px;
+    margin: 45px 0 25px 0;
+    /* Giảm margin */
+    padding: 0px;
+    /* Loại bỏ padding */
+}
+
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    border: 2px solid rgba(143, 137, 137, 0.1);
+    border-radius: 40px;
+    font-size: 16px;
+    padding: 20px 50px 20px 20px;
+    /* Điều chỉnh padding cho phù hợp */
+}
+
+.input-icon {
+    position: absolute;
+    right: 25px;
+    /* Đặt icon bên trái của input */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: gray;
+}
+
+.input-box input::placeholder {
+    color: black;
+}
+
+.form-box button {
+    width: 100%;
+    border: none;
+    padding: 10px 0;
+    border-radius: 20px;
+    box-shadow: none;
+}
+
+.button-custom {
+    display: flex;
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
+    justify-content: center;
+    /* Căn giữa theo chiều ngang */
+    padding: 10px;
+    /* Thêm padding nếu cần */
+    border-radius: 40px;
+    /* Bo tròn các góc */
+    cursor: pointer;
+    /* Thay đổi con trỏ khi hover */
+    color: black !important;
+    border: 2px solid rgba(235, 235, 235, 0.9) !important;
+}
+
+.button-custom img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    /* Khoảng cách giữa icon và chữ */
+}
+
+.form-container {
+    position: relative;
+    width: 450px;
+    height: 480px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Form login */
+.login,
+.register {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.5s ease-in-out;
+}
+
+.show-login {
+    transform: translateX(0);
+    /* Vị trí bình thường khi hiển thị */
+}
+
+.hide-login {
+    transform: translateX(-100%);
+    /* Trượt form login sang trái khi ẩn */
+}
+
+/* Form register - trượt từ phải khi chuyển sang đăng ký */
+.show-register {
+    transform: translateX(0);
+    /* Vị trí bình thường khi hiển thị */
+}
+
+.hide-register {
+    transform: translateX(100%);
+    /* Trượt form register sang phải khi ẩn */
+}
