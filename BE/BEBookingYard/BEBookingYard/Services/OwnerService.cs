@@ -14,6 +14,10 @@ namespace BEBookingYard.Services
         {
             return _ownerRepository.GetAll();
         }
+        public Owner GetOwnerById(int id)
+        {
+            return _ownerRepository.GetOwnerById(id);
+        }
 
     }
 }

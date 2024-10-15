@@ -19,5 +19,14 @@ namespace BEBookingYard.Controllers
             var owners = _ownerService.GetAll();
             return Ok(owners);
         }
+        [HttpGet("{id}")]
+        public ActionResult<Owner> GetOwnerById(int id) { 
+            var owner = _ownerService.GetOwnerById(id);
+            if (owner == null)
+            {
+                return NotFound();
+            }
+            return Ok(owner);
+        }
     }
 }
