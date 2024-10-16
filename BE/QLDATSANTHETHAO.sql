@@ -3,7 +3,7 @@ use QLDATSANTHETHAO
 
 CREATE TABLE USERS
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	Username varchar(50),
 	HashedPassword varchar(1024),
 	Email varchar(255),
@@ -18,14 +18,14 @@ CREATE TABLE USERS
 
 CREATE TABLE YARD_TYPES 
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	Name nvarchar(50),
 	IsDelete smallint,
 )
 
 CREATE TABLE YARDS
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	YardType int,
 	Name nvarchar(255),
 	NameTransformed varchar(255),
@@ -38,7 +38,7 @@ CREATE TABLE YARDS
 
 CREATE TABLE YARD_IMAGE 
 (
-	Id int,
+	Id int Identity(1,1),
 	YardId int,
 	ImageURL nvarchar(1024),
 	CONSTRAINT PK_YARD_IMAGE primary key (Id, YardId)
@@ -46,7 +46,7 @@ CREATE TABLE YARD_IMAGE
 
 CREATE TABLE YARD_DETAIL
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	YardId int,
 	Name nvarchar(255),
 	Location nvarchar(50),
@@ -59,7 +59,7 @@ CREATE TABLE YARD_DETAIL
 
 CREATE TABLE AMENITIES
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	Name nvarchar(50),
 	Icon nvarchar(50),
 	IsDelete smallint
@@ -67,14 +67,14 @@ CREATE TABLE AMENITIES
 
 CREATE TABLE AMENITIES_OF_YARD 
 (
-	YardId int,
+	YardId int Identity(1,1),
 	AmenityId int,
 	constraint PK_AMENITIES_OF_YARD primary key (YardId, AmenityId)
 )
 
 CREATE TABLE BOOKINGS
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	UserId int,
 	Yard int,
 	StartTime datetime,
@@ -87,7 +87,7 @@ CREATE TABLE BOOKINGS
 
 CREATE TABLE RATINGS
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	UserId int,
 	Yard int,
 	Rating int,
@@ -99,7 +99,7 @@ CREATE TABLE RATINGS
 
 CREATE TABLE VOUCHERS
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	Name nvarchar(100),
 	Type nvarchar(100),
 	Discount float,
@@ -110,7 +110,7 @@ CREATE TABLE VOUCHERS
 
 CREATE TABLE PAYMENTS
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	BookingIds nvarchar(100),
 	PaymentMethod nvarchar(100),
 	PaymentDate datetime,
@@ -128,7 +128,7 @@ CREATE TABLE WISHLIST
 
 CREATE TABLE OWNERS
 (
-	Id int primary key,
+	Id int Identity(1,1) primary key,
 	Username varchar(50),
 	HashedPassword varchar(1024),
 	FullName nvarchar(100),
@@ -159,4 +159,5 @@ ALTER TABLE PAYMENTS ADD CONSTRAINT FK_PAYMENT_VOUCHER FOREIGN KEY (VoucherId) R
 
 ALTER TABLE WISHLIST ADD CONSTRAINT FK_WISHLIST_USER FOREIGN KEY (UserId) REFERENCES USERS(Id)
 ALTER TABLE WISHLIST ADD CONSTRAINT FK_WISHLIST_YARD FOREIGN KEY (Yard) REFERENCES YARDS(Id)
+
 
