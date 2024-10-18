@@ -11,16 +11,19 @@ namespace BEBookingYard.Controllers
     public class OwnerController : ControllerBase
     {
         private readonly OwnerService _ownerService;
+
         public OwnerController(OwnerService ownerService)
         {
             _ownerService = ownerService;
         }
+
         [HttpGet]
         public ActionResult<IEnumerable<OwnerDTO>> GetAllOwners()
         {
             var owners = _ownerService.GetAll();
             return Ok(owners);
         }
+
         [HttpGet("{id}")]
         public ActionResult<OwnerDTO> GetOwnerById(int id)
         {
@@ -31,6 +34,7 @@ namespace BEBookingYard.Controllers
             }
             return Ok(owner);
         }
+
         [HttpPost]
         public ActionResult<Owner> AddOwner([FromBody] Owner owner)
         {

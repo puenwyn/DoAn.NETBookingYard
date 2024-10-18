@@ -18,11 +18,13 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<OwnerContext>(option =>
+builder.Services.AddDbContext<ApplicationContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 builder.Services.AddScoped<OwnerService>();
+builder.Services.AddScoped<IYardDetailRepository, YardDetailRepository>();
+builder.Services.AddScoped<IYardDetailService, YardDetailService>();
 
 // Thêm các dịch vụ cho Swagger
 builder.Services.AddEndpointsApiExplorer();

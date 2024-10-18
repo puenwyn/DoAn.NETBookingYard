@@ -15,25 +15,25 @@ namespace BEBookingYard.Repositories
 
     public class OwnerRepository : IOwnerRepository
     {
-        private readonly OwnerContext _ownerContext;
-        public OwnerRepository(OwnerContext ownerContext)
+        private readonly ApplicationContext _applicationContext;
+        public OwnerRepository(ApplicationContext applicationContext)
         {
-            _ownerContext = ownerContext;
+            _applicationContext = applicationContext;
         }
 
         public void AddOwner(Owner owner)
         {
-            if(_ownerContext.Owners.Any(x => x.Username == owner.Username))
+            if(_applicationContext.Owners.Any(x => x.Username == owner.Username))
             {
                 throw new Exception("Username already exists");
             }
-            _ownerContext.Owners.Add(owner);
-            _ownerContext.SaveChanges();
+            _applicationContext.Owners.Add(owner);
+            _applicationContext.SaveChanges();
         }
 
         public IEnumerable<OwnerDTO> GetAll()
         {
-            var owners = _ownerContext.Owners.ToList();
+            var owners = _applicationContext.Owners.ToList();
             return owners.Select(owner => new OwnerDTO
             {
                 Id = owner.Id,
@@ -49,7 +49,7 @@ namespace BEBookingYard.Repositories
 
         public OwnerDTO? GetOwnerById(int id)
         {
-            var owner = _ownerContext.Owners.FirstOrDefault(x => x.Id == id);
+            var owner = _applicationContext.Owners.FirstOrDefault(x => x.Id == id);
             if (owner == null)
             {
                 return null;
@@ -69,7 +69,7 @@ namespace BEBookingYard.Repositories
 
         public void UpdateOwner(OwnerDTO ownerDTO)
         {
-            var existingOwner = _ownerContext.Owners.FirstOrDefault(x => x.Id == ownerDTO.Id);
+            var existingOwner = _applicationContext.Owners.FirstOrDefault(x => x.Id == ownerDTO.Id);
             if(existingOwner == null)
             {
                 throw new InvalidOperationException("Owner not found");
@@ -81,7 +81,7 @@ namespace BEBookingYard.Repositories
             existingOwner.Gender = ownerDTO.Gender;
             existingOwner.IsLocked = ownerDTO.IsLocked;
 
-            _ownerContext.SaveChanges();
+            _applicationContext.SaveChanges();
         }
     }
 }
