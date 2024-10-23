@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ACER\\Desktop\\DoAn.NETBookingYard\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj": {}
+    "D:\\quaTrinhHoc\\nam4.5\\dotNet\\_Project\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ACER\\Desktop\\DoAn.NETBookingYard\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj": {
+    "D:\\quaTrinhHoc\\nam4.5\\dotNet\\_Project\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ACER\\Desktop\\DoAn.NETBookingYard\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj",
+        "projectUniqueName": "D:\\quaTrinhHoc\\nam4.5\\dotNet\\_Project\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj",
         "projectName": "BEBookingYard",
-        "projectPath": "C:\\Users\\ACER\\Desktop\\DoAn.NETBookingYard\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj",
-        "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ACER\\Desktop\\DoAn.NETBookingYard\\BE\\BEBookingYard\\BEBookingYard\\obj\\",
+        "projectPath": "D:\\quaTrinhHoc\\nam4.5\\dotNet\\_Project\\BE\\BEBookingYard\\BEBookingYard\\BEBookingYard.csproj",
+        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+        "outputPath": "D:\\quaTrinhHoc\\nam4.5\\dotNet\\_Project\\BE\\BEBookingYard\\BEBookingYard\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,6 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -45,6 +46,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.ApplicationInsights.AspNetCore": {
+              "target": "Package",
+              "version": "[2.22.0, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[8.0.10, )"
@@ -54,6 +59,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.10, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[8.0.6, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -79,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
