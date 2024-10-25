@@ -108,6 +108,22 @@ namespace BEBookingYard.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
+
+        //Tìm sân theo mã sân
+        [HttpGet("YardType/{yardType}")]
+        public ActionResult<IEnumerable<YardDTO>> GetYardByYardType(int yardType)
+        {
+            try
+            {
+                var results = _yardService.GetYardByYardType(yardType);
+                return Ok(results);
+            }
+            catch
+            {
+                return NoContent();
+            }
+        }
+
     }
 
 }

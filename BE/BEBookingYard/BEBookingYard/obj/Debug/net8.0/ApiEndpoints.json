@@ -220,5 +220,31 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BEBookingYard.Controllers.YardsController",
+    "Method": "GetYardByYardType",
+    "RelativePath": "api/v1/Yards/YardType/{yardType}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "yardType",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BEBookingYard.DTO.YardDTO, BEBookingYard, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   }
 ]

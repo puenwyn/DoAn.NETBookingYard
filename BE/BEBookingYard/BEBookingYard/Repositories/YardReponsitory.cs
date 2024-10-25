@@ -11,6 +11,8 @@ namespace BEBookingYard.Repositories
         void AddYard(Yard yard);
         void UpdateYard(YardDTO yard);
         void DeleteYard(int id);
+        IEnumerable<YardDTO> GetYardByYardType(int yardType);
+
     }
     public class YardReponsitory : IYardReponsitory
     {
@@ -95,6 +97,24 @@ namespace BEBookingYard.Repositories
             existingYard.Description = yardDTO.Description;
             existingYard.Owner = yardDTO.Owner;
             _yardContext.SaveChanges();   
+        }
+
+        public IEnumerable<YardDTO> GetYardByYardType(int yardType)
+        {
+            var yards = _yardContext.Yards.ToList();
+            return yards
+                .Where(y => y.Owner != 0 && y.IsDelete == 0 && y.YardType == yardType )
+                .Select(yard => new YardDTO
+                {
+                    Id = yard.Id,
+                    YardType = yard.YardType,
+                    Name = yard.Name,
+                    NameTransformed = yard.NameTransformed,
+                    Address = yard.Address,
+                    Owner = yard.Owner,
+                    Description = yard.Description,
+                    isDelete = yard.IsDelete
+                });
         }
     }
 }

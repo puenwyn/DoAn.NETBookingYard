@@ -49,5 +49,14 @@ namespace BEBookingYard.Services
             }
             _yardReponsitory.DeleteYard(id);
         }
+
+        public IEnumerable<YardDTO> GetYardByYardType(int yardType)
+        {
+            if (yardType == null)
+            {
+                throw new ArgumentNullException("Yard type not found");
+            }
+           return _yardReponsitory.GetYardByYardType(yardType);
+        }
     }
 }
