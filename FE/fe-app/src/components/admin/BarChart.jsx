@@ -12,26 +12,30 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const BarChart = () => {
+const barChartData = [
+    { label: 'Red', stat: 31 },
+    { label: 'Blue', stat: 28 },
+    { label: 'Yellow', stat: 6 },
+    { label: 'Green', stat: 9 },
+    { label: 'Orange', stat: 7 },
+    { label: 'Purple', stat: 11 },
+    { label: 'Black', stat: 21 },
+    { label: 'White', stat: 17 },
+    { label: 'Brown', stat: 15 },
+    { label: 'Violet', stat: 30 },
+    { label: 'Sky', stat: 34 },
+    { label: 'Pink', stat: 28 },
+]
+
+const BarChart = ({ dataset }) => {
     const data = {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Orange', 'Purple', 'Black', 'White', 'Brown', 'Violet', 'Sky', 'Pink'],
+        labels: barChartData.map((item) => item.label),
         datasets: [
             {
                 label: 'My First Dataset',
-                data: [31, 28, 6, 9, 7, 11, 21, 17, 15, 30, 34, 28],
+                data: barChartData.map((item) => item.stat),
                 backgroundColor: [
-                    'rgba(29, 93, 234, 1)',  // Có thể thêm màu cho từng cột
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(255, 0, 0, 1)',
-                    'rgba(0, 255, 0, 1)',
-                    'rgba(0, 0, 255, 1)',
-                    'rgba(128, 0, 128, 1)',
-                    'rgba(255, 192, 203, 1)',
+                    'rgba(29, 93, 234, 1)',
                 ],
                 borderColor: 'white',
                 borderWidth: 1,
@@ -73,4 +77,83 @@ const BarChart = () => {
     );
 };
 
-export default BarChart;
+const bookingData = [
+    { label: 'Ngày 1', booked: 20, canceled: 5 },
+    { label: 'Ngày 2', booked: 15, canceled: 3 },
+    { label: 'Ngày 3', booked: 25, canceled: 10 },
+    { label: 'Ngày 4', booked: 30, canceled: 2 },
+    { label: 'Ngày 5', booked: 28, canceled: 4 },
+    { label: 'Ngày 6', booked: 19, canceled: 1 },
+    { label: 'Ngày 7', booked: 19, canceled: 0 },
+];
+
+
+const BarChart2 = () => {
+    const data = {
+        labels: bookingData.map(item => item.label),
+        datasets: [
+            {
+                label: 'Lượt đặt sân',
+                data: bookingData.map(item => item.booked),
+                backgroundColor: 'rgba(29, 93, 234, 1)',
+                borderColor: 'white',
+                borderWidth: 1,
+                borderRadius: 5,
+            },
+            {
+                label: 'Lượt hủy đặt sân',
+                data: bookingData.map(item => item.canceled),
+                backgroundColor: 'rgba(255, 99, 132, 1)',
+                borderColor: 'white',
+                borderWidth: 1,
+                borderRadius: 5,
+            },
+        ],
+    };
+
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false, // Ẩn legend
+            },
+            title: {
+                display: false, // Ẩn tiêu đề
+            },
+            tooltip: {
+                enabled: true,
+            },
+        },
+        scales: {
+            x: {
+                display: true,
+                beginAtZero: true,
+                ticks: {
+                    display: true, // Ẩn nhãn trục y
+                },
+                grid: {
+                    display: false, // Ẩn các đường kẻ trên trục y
+                },
+            },
+            y: {
+                display: true,
+                beginAtZero: true,
+                ticks: {
+                    display: true, // Ẩn nhãn trục y
+                },
+                grid: {
+                    display: false, // Ẩn các đường kẻ trên trục y
+                },
+            },
+        },
+    };
+
+    return (
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <Bar data={data} options={options} />
+        </div>
+    );
+};
+
+export { BarChart, BarChart2 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import { CiLocationOn, CiHeart, CiWarning, CiShare2, CiWifiOn } from "react-icons/ci";
 import { FaStar, FaCarAlt, FaMotorcycle, FaRegImage } from "react-icons/fa";
@@ -16,111 +16,147 @@ const services = [
     { icon: <IoFastFood className='me-1 fs-4' />, label: 'Đồ ăn' },
 ];
 
-const BookingWeek = () => {
-    // Lấy ngày hiện tại
-    const today = new Date();
-    const currentDay = today.getDay(); // Ngày trong tuần (0: Chủ Nhật, 1: Thứ Hai, ..., 6: Thứ Bảy)
+function generateTimeItems(startDateStr, endDateStr) {
+    const startDate = new Date(startDateStr.split('/').reverse().join('-'));
+    const endDate = new Date(endDateStr.split('/').reverse().join('-'));
+    const currentDate = new Date();
+    currentDate.setSeconds(0); // Đặt giây về 0 để so sánh chính xác
 
-    // Mảng chứa tên các ngày trong tuần
-    const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-    const weekDates = [];
+    const timeItems = {};
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const peakHours = new Set([...Array.from({ length: 3 }, (_, i) => i + 6), ...Array.from({ length: 4 }, (_, i) => i + 17)]);
 
-    // Tạo mảng chứa ngày tháng của tuần từ hôm nay trở đi
-    for (let i = 0; i < 7; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i); // Cập nhật ngày theo thứ trong tuần
-        weekDates.push({
-            day: daysOfWeek[date.getDay()],
-            dayOfWeek: date.getDay(),
-            date: date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+        const dayKey = date.toLocaleDateString('vi-VN', { weekday: 'long' }) + ' ' + date.toLocaleDateString('vi-VN');
+        timeItems[dayKey] = { timeItems: [] };
+
+        hours.forEach(hour => {
+            const startHour = hour;
+            const endHour = hour + 1;
+            const isPeak = peakHours.has(startHour);
+            const timeToCheck = new Date(date);
+            timeToCheck.setHours(startHour, 0, 0);
+            const isPast = timeToCheck < currentDate;
+
+            timeItems[dayKey].timeItems.push({
+                id: `${dayKey}-${startHour}`,
+                time: `${String(startHour).padStart(2, '0')}:00 - ${String(endHour).padStart(2, '0')}:00`,
+                session: startHour < 12 ? 'AM' : 'PM',
+                isPeak: isPeak,
+                isPast: isPast,
+            });
         });
     }
 
-    return (
-        <div className='booking-dayofweek d-flex flex-column gap-3'>
-            {weekDates.map((item, index) => (
-                <div key={index} className={`day-of-week p-1 text-center ${item.dayOfWeek === currentDay ? 'dayactive' : ''}`}>
-                    <b>{item.day}</b>
-                    <small className='d-block'>{item.date}</small>
-                </div>
-            ))}
-        </div>
-    );
-};
+    return timeItems;
+}
 
-const DateRangeButton = () => {
-    // Khởi tạo ngày hiện tại
+const DateRangeButton = ({ onDateRangeChange }) => {
     const [startDate, setStartDate] = useState(new Date());
-
-    // Tính ngày kết thúc
     const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 7);
+    endDate.setDate(startDate.getDate() + 6);
+    const lastAlertDate = useRef({ start: startDate, end: endDate });
 
-    // Định dạng ngày theo định dạng "ngày/tháng"
     const formatDate = (date) => {
         return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
     };
 
-    // Hàm xử lý bấm nút "tiếp theo"
     const handleNext = () => {
         const newStartDate = new Date(startDate);
         newStartDate.setDate(startDate.getDate() + 7);
-        setStartDate(newStartDate);
+        updateDateRange(newStartDate);
     };
 
-    // Hàm xử lý bấm nút "trước"
     const handlePrevious = () => {
         const newStartDate = new Date(startDate);
         newStartDate.setDate(startDate.getDate() - 7);
+        updateDateRange(newStartDate);
+    };
+
+    const updateDateRange = (newStartDate) => {
+        const newEndDate = new Date(newStartDate);
+        newEndDate.setDate(newStartDate.getDate() + 6);
         setStartDate(newStartDate);
+        if (
+            newStartDate.getTime() !== lastAlertDate.current.start.getTime() ||
+            newEndDate.getTime() !== lastAlertDate.current.end.getTime()
+        ) {
+            lastAlertDate.current = { start: newStartDate, end: newEndDate };
+            onDateRangeChange(newStartDate, newEndDate);
+        }
     };
 
     return (
-        <Button variant="outlined" startIcon={<MdNavigateBefore onClick={handlePrevious} />} endIcon={<MdNavigateNext onClick={handleNext} />}>
+        <Button
+            variant="outlined"
+            startIcon={<MdNavigateBefore onClick={handlePrevious} />}
+            endIcon={<MdNavigateNext onClick={handleNext} />}
+        >
             Từ ngày {formatDate(startDate)} đến ngày {formatDate(endDate)}
         </Button>
     );
 };
 
 const Detail = () => {
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 6);
 
-    function createHourlyTimeRangeArray() {
-        let timeRanges = [];
-        let currentDate = new Date();
-        let currentHour = currentDate.getHours();
+    const [dateRange, setDateRange] = useState({ start: today, end: nextWeek });
+    const [timeItemsHashMap, setTimeItemHashMap] = useState({});
 
-        let day = currentDate.getDate().toString().padStart(2, '0');
-        let month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Tháng bắt đầu từ 0
-        let year = currentDate.getFullYear();
-
-        for (let hour = 0; hour < 24; hour++) {
-            let startHour = hour.toString().padStart(2, '0');
-            let endHour = ((hour + 1) % 24).toString().padStart(2, '0');
-
-            // Xác định AM/PM
-            let amPm = hour < 12 ? 'AM' : 'PM';
-
-            // Xác định thời gian là quá khứ hay tương lai
-            let status = hour < currentHour ? 'Past' : 'Future';
-
-            // Định dạng ngày tháng năm
-            let dateStr = `${day}/${month}/${year}`;
-
-            // Đẩy vào mảng
-            timeRanges.push({
-                range: `${startHour}:00 - ${endHour}:00`,
-                amPm: amPm,
-                status: status,
-                date: dateStr
-            });
-        }
-        return timeRanges;
-    }
-
-    const [timeDay, setTimeDay] = useState([]);
     useEffect(() => {
-        setTimeDay(createHourlyTimeRangeArray());
+        const startDate = dateRange.start.toLocaleDateString('vi-VN');
+        const endDate = dateRange.end.toLocaleDateString('vi-VN');
+        const newTimeItems = generateTimeItems(startDate, endDate);
+        setTimeItemHashMap(newTimeItems);
+    }, [dateRange]);
+
+    const handleDateRangeChange = (start, end) => {
+        setDateRange({ start, end });
+    };
+
+    const [selectedSession, setSelectedSession] = useState(null);
+
+    useEffect(() => {
+        const currentHour = new Date().getHours();
+        if (currentHour < 12) {
+            setSelectedSession('morning');
+        } else {
+            setSelectedSession('afternoon');
+        }
     }, []);
+
+    const handleSessionChange = (session) => {
+        setSelectedSession(session);
+    };
+
+    const [selectedButtons, setSelectedButtons] = useState([]);
+    const handleButtonClick = (itemId) => {
+        setSelectedButtons(prev => {
+            if (prev.includes(itemId)) {
+                return prev.filter(id => id !== itemId);
+            } else {
+                return [...prev, itemId];
+            }
+        });
+    };
+
+    const [selectedTimeItems, setSelectedTimeItems] = useState([]);
+
+    const onReset = () => {
+        setSelectedButtons([]);
+        setSelectedTimeItems([]);
+    };
+
+    useEffect(() => {
+        const selectedItems = selectedButtons.map(id => {
+            const [dayKey, hour] = id.split('-');
+            const item = timeItemsHashMap[dayKey]?.timeItems.find(item => item.id === id);
+            return item ? { id: item.id, time: item.time } : null;
+        }).filter(Boolean);
+        setSelectedTimeItems(selectedItems);
+    }, [selectedButtons, timeItemsHashMap]);
 
     return (
         <div>
@@ -227,30 +263,52 @@ const Detail = () => {
                                 <div className='booking-form'>
                                     <form action="" method='POST'>
                                         <div className="mb-3">
-                                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Họ và tên" />
+                                            <input type="text" className="form-control" placeholder="Họ và tên" />
                                         </div>
                                         <div className="mb-3">
-                                            <input type="email" className="form-control" id="exampleFormControlInput1" placeholder="Email" />
+                                            <input type="email" className="form-control" placeholder="Email" />
                                         </div>
                                         <div className="mb-3">
-                                            <input type="email" className="form-control" id="exampleFormControlInput1" placeholder="Số điện thoại" />
-                                        </div>
-                                        <select className="form-select form-select-sm fs-6 mb-3" aria-label=".form-select-sm example">
-                                            <option value="1" selected>1,5 giờ</option>
-                                            <option value="2">1 giờ</option>
-                                        </select>
-                                        <div className='dateandtime d-flex justify-content-between mb-3'>
-                                            <input type="text" className='p-1' style={{ width: '50%' }} />
-                                            <input type="time" className='p-1' style={{ width: '50%' }} />
+                                            <input type="text" className="form-control" placeholder="Số điện thoại" />
                                         </div>
                                         <div className="mb-3">
-                                            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                            <textarea className="form-control" rows="3" placeholder='Ghi chú'></textarea>
                                         </div>
-                                        <Button variant="text" className='mb-3' style={{ width: '100%' }}>ĐẶT SÂN</Button>
+                                        {/* Hiển thị danh sách thời gian đã chọn */}
+                                        <div className="selected-times mb-3">
+                                            <h5>Thời gian đã chọn:</h5>
+                                            {selectedTimeItems.length > 0 ? (
+                                                <>
+                                                    {Object.entries(selectedTimeItems.reduce((acc, item) => {
+                                                        const dayKey = item.id.split('-')[0];
+                                                        const date = dayKey;
+                                                        if (!acc[date]) {
+                                                            acc[date] = [];
+                                                        }
+                                                        acc[date].push(item.time);
+                                                        return acc;
+                                                    }, {})).map(([date, times]) => (
+                                                        <div key={date}>
+                                                            <strong>{date}</strong>
+                                                            <ul>
+                                                                {times.map((time, index) => (
+                                                                    <li key={index} className="ms-3">{time}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    ))}
+                                                </>
+                                            ) : (
+                                                <p>Chưa có thời gian nào được chọn.</p>
+                                            )}
+                                        </div>
+                                        <Button variant="outlined" className='mb-3' onClick={onReset} style={{ width: '100%' }}>
+                                            RESET
+                                        </Button>
+                                        <Button variant="contained" color='success' className='mb-3' style={{ width: '100%' }}>ĐẶT SÂN</Button>
                                     </form>
                                 </div>
                             </div>
-
                         </div>
                         <div className='col-md-9 col-12'>
                             <div className='booking bg-white' style={{ borderRadius: '8px' }}>
@@ -258,114 +316,67 @@ const Detail = () => {
                                     <Button variant="contained" endIcon={<MdNavigateNext />}>
                                         Sân cầu lông đôi
                                     </Button>
-                                    <DateRangeButton />
+                                    <DateRangeButton onDateRangeChange={handleDateRangeChange} />
                                     <div className='booking-time gap-3'>
-                                        <Button variant="contained">Khung sáng</Button>
-                                        <Button variant="outlined">Khung chiều</Button>
+                                        <Button
+                                            variant={selectedSession === 'morning' ? 'contained' : 'outlined'}
+                                            onClick={() => handleSessionChange('morning')}
+                                        >
+                                            Khung sáng
+                                        </Button>
+                                        <Button
+                                            className='ms-1'
+                                            variant={selectedSession === 'afternoon' ? 'contained' : 'outlined'}
+                                            onClick={() => handleSessionChange('afternoon')}
+                                        >
+                                            Khung chiều
+                                        </Button>
                                     </div>
                                 </div>
                                 <div className="booking-calendar d-flex p-3">
-                                    <BookingWeek />
-
+                                    <div className='booking-dayofweek d-flex flex-column gap-3 pb-3'>
+                                        {
+                                            Object.keys(timeItemsHashMap).map(dayKey => {
+                                                const today = new Date().toLocaleDateString('vi-VN');
+                                                const isToday = dayKey.includes(today);
+                                                return (
+                                                    <div key={dayKey} className={`day-of-week p-1 text-center ${isToday ? 'dayactive' : ''}`}>
+                                                        <b>{dayKey.split(' ')[0].concat(' ').concat(dayKey.split(' ')[1])}</b>
+                                                        <small className='d-block'>{dayKey.split(' ')[2]}</small>
+                                                    </div>
+                                                );
+                                            })
+                                        }
+                                    </div>
                                     <div className='booking-hour w-100 ms-3 ps-3 d-flex flex-column gap-3' style={{ overflowX: 'scroll', scrollBehavior: 'smooth' }}>
-                                        <div className='row d-flex flex-nowrap gap-3'>
-                                            {
-                                                timeDay.map((item) => {
-                                                    if (item.amPm === 'AM') {
-                                                        return (
-                                                            <Button disabled={item.status === 'Past'} className='time d-flex flex-column text-center p-1'>
-                                                                <span>{item.range}</span>
-                                                                <small>120K</small>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </div>
-                                        <div className='row d-flex flex-nowrap gap-3'>
-                                            {
-                                                timeDay.map((item) => {
-                                                    if (item.amPm === 'AM') {
-                                                        return (
-                                                            <Button disabled={item.status === 'Past'} className='time d-flex flex-column text-center p-1'>
-                                                                <span>{item.range}</span>
-                                                                <small>120K</small>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </div>
-                                        <div className='row d-flex flex-nowrap gap-3'>
-                                            {
-                                                timeDay.map((item) => {
-                                                    if (item.amPm === 'AM') {
-                                                        return (
-                                                            <Button disabled={item.status === 'Past'} className='time d-flex flex-column text-center p-1'>
-                                                                <span>{item.range}</span>
-                                                                <small>120K</small>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </div>
-                                        <div className='row d-flex flex-nowrap gap-3'>
-                                            {
-                                                timeDay.map((item) => {
-                                                    if (item.amPm === 'AM') {
-                                                        return (
-                                                            <Button disabled={item.status === 'Past'} className='time d-flex flex-column text-center p-1'>
-                                                                <span>{item.range}</span>
-                                                                <small>120K</small>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </div>
-                                        <div className='row d-flex flex-nowrap gap-3'>
-                                            {
-                                                timeDay.map((item) => {
-                                                    if (item.amPm === 'AM') {
-                                                        return (
-                                                            <Button disabled={item.status === 'Past'} className='time d-flex flex-column text-center p-1'>
-                                                                <span>{item.range}</span>
-                                                                <small>120K</small>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </div>
-                                        <div className='row d-flex flex-nowrap gap-3'>
-                                            {
-                                                timeDay.map((item) => {
-                                                    if (item.amPm === 'AM') {
-                                                        return (
-                                                            <Button disabled={item.status === 'Past'} className='time d-flex flex-column text-center p-1'>
-                                                                <span>{item.range}</span>
-                                                                <small>120K</small>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </div>
-                                        <div className='row d-flex flex-nowrap gap-3'>
-                                            {
-                                                timeDay.map((item) => {
-                                                    if (item.amPm === 'AM') {
-                                                        return (
-                                                            <Button disabled={item.status === 'Past'} className='time d-flex flex-column text-center p-1'>
-                                                                <span>{item.range}</span>
-                                                                <small>120K</small>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        </div>
+                                        {
+                                            Object.keys(timeItemsHashMap).map(dayKey => {
+                                                const timesItem = timeItemsHashMap[dayKey].timeItems;
+                                                return (
+                                                    <div key={dayKey} className='row d-flex flex-nowrap gap-3'>
+                                                        {
+                                                            timesItem.map((item) => {
+                                                                const shouldDisplay = (selectedSession === 'morning' && item.session === 'AM') ||
+                                                                    (selectedSession === 'afternoon' && item.session === 'PM');
+
+                                                                return (
+                                                                    <Button
+                                                                        variant={selectedButtons.includes(item.id) ? 'contained' : 'outlined'}
+                                                                        disabled={item.isPast}
+                                                                        key={item.id}
+                                                                        className={`time flex-column text-center p-1 ${shouldDisplay ? 'd-flex' : 'd-none'}`}
+                                                                        onClick={() => handleButtonClick(item.id)}
+                                                                    >
+                                                                        <span>{item.time}</span>
+                                                                        <small>120K</small>
+                                                                    </Button>
+                                                                );
+                                                            })
+                                                        }
+                                                    </div>
+                                                );
+                                            })
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -374,7 +385,7 @@ const Detail = () => {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Detail;

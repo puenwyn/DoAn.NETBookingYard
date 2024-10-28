@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+.admin-yard {
+    width: 100%;
+    height: 100%;
+}
+
+.custom-datagrid .MuiDataGrid-columnHeaders {
+    font-family: "Public Sans", sans-serif;
+}
+
+.custom-datagrid .MuiDataGrid-cell {
+    font-family: "Public Sans", sans-serif;
+}
+
+.yard-type {
+    box-shadow: rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
+    border-radius: 1rem;
+    overflow: visible;
+    margin: 0;
+}
+
+.header-yard {
+    height: 100%;
+}
+
+.custom-page p {
+    margin-bottom: 0;
+}

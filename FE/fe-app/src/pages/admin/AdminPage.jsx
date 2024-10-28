@@ -6,6 +6,12 @@ import AdminSideBar from '../../components/admin/AdminSidebar';
 import Table from '../../components/admin/Table';
 import AdminYardManager from '../../components/admin/AdminYardManager';
 import UserTable from '../../components/admin/UserTable';
+import AdminYardDetail from '../../components/admin/AdminYardDetail';
+import AdminOwner from '../../components/admin/AdminOwner';
+import AdminOwnerTable from '../../components/admin/AdminOwnerTable';
+import AdminUserDetail from '../../components/admin/AdminUserDetail';
+import AdminUserTable from '../../components/admin/AdminUserTable';
+import AdminChart from '../../components/admin/AdminChart';
 
 const AdminPage = () => {
 
@@ -34,21 +40,26 @@ const AdminPage = () => {
     const handleOption = () => {
         switch(optionSidebar) {
             case 'dashboard':
-                return <AdminDashboard darkMode={darkMode} className='admin-dashboard' />;
+                // return <AdminDashboard darkMode={darkMode} className='admin-dashboard' />;
+                return <AdminDashboard />
+            case 'chart':
+                return <AdminChart />
             case 'booking':
                 return <UserTable />;
             case 'account':
-                break;
+                return <AdminUserDetail />;
             case 'yard':
-                break;
+                return <AdminYardDetail />;
             case 'owner':
-                break;
+                return <AdminOwnerTable />;
+            case 'user':
+                return <AdminUserTable />
         }
     }
 
     return (
         <div className={`${darkMode ? 'dark-mode' : ''} ${menuSidebar ? 'expand-menu' : ''} admin-page d-flex`}>
-            <AdminSideBar darkMode={darkMode} optionSidebar={optionSidebar} setOptionSideBar={setOptionSidebar} />
+            <AdminSideBar darkMode={darkMode} optionSidebar={optionSidebar} setOptionSideBar={setOptionSidebar} expand={menuSidebar} />
             <div className='admin-content px-1 py-1 d-flex flex-column'>
                 <AdminHeader darkMode={darkMode} toggleDarkMode={toggleDarkMode} toggleExpandMenu={toggleExpandMenu} />
                 <div className='admin-content-option px-2 d-flex'>

@@ -57,7 +57,7 @@ const HeaderAction = () => {
 
             {/* Action: Giỏ hàng */}
             <div className="header-action-item">
-                <Link to='/' title='Giỏ hàng'>
+                <Link to='/my-cart' title='Giỏ hàng'>
                     <Button className="d-flex flex-column">
                         <span className="icon-action">
                             <FaShoppingCart />
