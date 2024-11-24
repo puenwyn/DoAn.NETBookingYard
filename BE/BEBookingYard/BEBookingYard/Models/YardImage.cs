@@ -17,6 +17,6 @@ namespace BEBookingYard.Models
 
         // Mối quan hệ
         [ForeignKey("YardId")]
-        public YardDetail YardDetail { get; set; }
+        public Yard YardD { get; set; }
     }
 }

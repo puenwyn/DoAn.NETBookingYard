@@ -23,8 +23,12 @@ builder.Services.AddDbContext<ApplicationContext>(option =>
 
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 builder.Services.AddScoped<OwnerService>();
-builder.Services.AddScoped<IYardDetailRepository, YardDetailRepository>();
-builder.Services.AddScoped<IYardDetailService, YardDetailService>();
+
+builder.Services.AddDbContext<YardContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IYardRepository, YardRepository>(); // Repository cho Yard
+builder.Services.AddScoped<YardService>();
 
 // Thêm các dịch vụ cho Swagger
 builder.Services.AddEndpointsApiExplorer();
