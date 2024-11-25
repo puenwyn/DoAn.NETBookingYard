@@ -11,6 +11,10 @@ import {
     FormControl,
     Chip,
     Typography,
+    Box,
+    Grid2,
+    InputAdornment,
+    Radio,
 } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,6 +29,18 @@ const CartPage = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [expandedRow, setExpandedRow] = useState(null);
+    const [selectedOption, setSelectedOption] = useState("cash");
+
+    const options = [
+        { label: "Tiền mặt", value: "cash" },
+        { label: "Thẻ tín dụng", value: "credit" },
+        { label: "Chuyển khoản", value: "bank" },
+        { label: "Ví điện tử", value: "wallet" },
+    ];
+
+    const handleRadioChange = (value) => {
+        setSelectedOption(value);
+    };
 
     // Dữ liệu sân
     const [rows, setRows] = useState([
@@ -218,6 +234,7 @@ const CartPage = () => {
         },
     ];
 
+
     return (
         <div className="container">
             <div className="row">
@@ -257,7 +274,9 @@ const CartPage = () => {
                     <div className="checkout-section">
                         <div className="row">
                             <div className="col-md-8 md-12">
+
                                 <div className="bg-white p-3 mt-3 rounded" style={{ boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px' }}>
+                                    <Typography sx={{ color: '#6D7C89', fontWeight: 400, textTransform: 'uppercase' }}>Thông tin thanh toán</Typography>
                                     <h6 className="my-3 d-flex align-items-center justify-content-between">
                                         Số lượng sân đã chọn: <span>{selectedRows.length}</span>
                                     </h6>
@@ -275,23 +294,60 @@ const CartPage = () => {
                             </div>
                             <div className="col-md-4 md-12" >
                                 <div className="bg-white p-3 mt-3 rounded" style={{ boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px' }}>
+                                    <Typography sx={{ color: '#6D7C89', fontWeight: 400, textTransform: 'uppercase' }}>Phiếu giảm giá</Typography>
                                     <TextField
                                         label="Voucher giảm giá"
                                         variant="outlined"
                                         value={voucher}
                                         onChange={(e) => setVoucher(e.target.value)}
                                         fullWidth
-                                        sx={{ marginBottom: '16px' }}
+                                        sx={{ marginBottom: '16px', marginTop: 1 }}
                                     />
                                     <FormControl fullWidth sx={{ marginBottom: '16px' }}>
-                                        <InputLabel>Phương thức thanh toán</InputLabel>
-                                        <Select
-                                            value={paymentMethod}
-                                            onChange={(e) => setPaymentMethod(e.target.value)}
-                                        >
-                                            <MenuItem value="credit_card">Thẻ tín dụng</MenuItem>
-                                            <MenuItem value="paypal">PayPal</MenuItem>
-                                        </Select>
+                                        <Typography sx={{ color: '#6D7C89', fontWeight: 400, textTransform: 'uppercase' }}>Phương thức thanh toán</Typography>
+                                        <Box sx={{ width: "100%", mt: 2 }}>
+                                            <Grid2 container spacing={2}>
+                                                {options.map((option, index) => (
+                                                    <Grid2 item size={6} key={option.value}>
+                                                        <TextField
+                                                            value={option.label}
+                                                            variant="outlined"
+                                                            InputProps={{
+                                                                readOnly: true,
+                                                                startAdornment: (
+                                                                    <InputAdornment position="start">
+                                                                        <Radio
+                                                                            checked={selectedOption === option.value}
+                                                                            onChange={() => handleRadioChange(option.value)}
+                                                                            value={option.value}
+                                                                            color="primary"
+                                                                        />
+                                                                    </InputAdornment>
+                                                                ),
+                                                                sx: {
+                                                                    paddingY: 0,
+                                                                    height: "45px",
+                                                                },
+                                                            }}
+                                                            disabled={false}
+                                                            sx={{
+                                                                "& .MuiOutlinedInput-root": {
+                                                                    "& fieldset": {
+                                                                        borderColor: selectedOption === option.value ? "primary.main" : "default",
+                                                                    },
+                                                                    "&:hover fieldset": {
+                                                                        borderColor: selectedOption === option.value ? "primary.main" : "default",
+                                                                    },
+                                                                    "&.Mui-focused fieldset": {
+                                                                        borderColor: "primary.main",
+                                                                    },
+                                                                },
+                                                            }}
+                                                        />
+                                                    </Grid2>
+                                                ))}
+                                            </Grid2>
+                                        </Box>
                                     </FormControl>
                                     <Button variant="contained" color="primary" onClick={handleCheckout}>
                                         Thanh toán

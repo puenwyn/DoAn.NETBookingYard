@@ -66,12 +66,21 @@ const DoughnutChart = () => {
     );
 };
 
-const DoughnutChart2 = () => {
+const dataset = [
+    { label: 'Red', stat: 31 },
+    { label: 'Blue', stat: 28 },
+    { label: 'Yellow', stat: 6 },
+    { label: 'Green', stat: 9 },
+    { label: 'Orange', stat: 7 },
+    { label: 'Purple', stat: 11 },
+]
+
+const DoughnutChart2 = ({ dataset, full }) => {
     const data = {
-        labels: ['Red', 'Blue', 'Yellow', 'Sky', 'Brown'], // Không thêm nhãn cho từng phần
+        labels: dataset.map((item) => item.label), // Không thêm nhãn cho từng phần
         datasets: [
             {
-                data: [300, 50, 100, 200, 150], // Dữ liệu cho các phần
+                data: dataset.map((item) => item.stat), // Dữ liệu cho các phần
                 backgroundColor: [
                     'rgba(255, 99, 132, 1)', // Màu cho phần Red
                     'rgba(54, 162, 235, 1)', // Màu cho phần Blue
@@ -93,12 +102,12 @@ const DoughnutChart2 = () => {
                 display: false, // Ẩn legend
             },
             tooltip: {
-                enabled: false, // Ẩn tooltip hoàn toàn
+                enabled: true, // Ẩn tooltip hoàn toàn
             },
         },
         cutout: '70%',
         rotation: -90, // Bắt đầu từ phía trên cùng
-        circumference: 180
+        circumference: full ? 360 : 180
     };
 
     return (

@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import AdminOwner from './AdminOwner';
 import Paper from '@mui/material/Paper';
-import { TablePagination, TableFooter, Button, TextField, IconButton, InputAdornment } from '@mui/material';
+import { TablePagination, TableFooter, Button, TextField, IconButton, InputAdornment, CircularProgress, Skeleton } from '@mui/material';
 import { Typography } from '@mui/material';
 import { Avatar, Grid2, Box } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -16,23 +16,11 @@ import { IoMdTrash } from "react-icons/io";
 import '../../styles/components/adminOwner.css';
 import { IoIosSearch } from "react-icons/io";
 import { MdOutbond } from 'react-icons/md';
-
-function createData(id, name, date, add, phone, gender, status) {
-    return { id, name, date, add, phone, gender, status };
-}
-
-const rows = [
-    createData(1, 'Nguyễn Văn A', '01-12-1999', '273 An Dương Vương', '0987654321', 'Nam', 'Active'),
-    createData(2, 'Trần Văn B', '24-03-2000', '496 Dương Quảng Hàm', '0123456789', 'Nam', 'Active'),
-    createData(3, 'Phan Văn C', '18-12-1997', '496 Dương Quảng Hàm', '0123456789', 'Nam', 'Active'),
-    createData(4, 'Nguyễn Đình D', '14-16-1997', '289 Nguyễn Thái Sơn', '0867285726', 'Nam', 'Active'),
-    createData(5, 'Nguyễn Ngọc E', '29-05-2001', '496 Dương Quảng Hàm', '0123456789', 'Nam', 'Active'),
-    createData(6, 'Huỳnh Gia G', '09-04-2002', '123 Phan Văn Trị', '0123456789', 'Nam', 'Active'),
-    createData(7, 'Nguyễn Văn A', '01-12-1999', '273 An Dương Vương', '0987654321', 'Nam', 'Block'),
-    createData(8, 'Trần Văn B', '24-03-2000', '496 Dương Quảng Hàm', '0123456789', 'Nam', 'Active'),
-    createData(9, 'Phan Văn C', '18-12-1997', '496 Dương Quảng Hàm', '0123456789', 'Nam', 'Active'),
-    createData(10, 'Nguyễn Đình D', '14-16-1997', '289 Nguyễn Thái Sơn', '0867285726', 'Nam', 'Active')
-];
+import { FaLock, FaUnlock } from "react-icons/fa6";
+import { OwnerContext } from '../../context/OwnerContext';
+import Swal from 'sweetalert2';
+import { formatDate } from '../../utils/FormatDate';
+import AdminOwnerUpdate from './adminOwner/AdminOwnerUpdate';
 
 const useStyles = makeStyles((theme) => ({
     tableFont: {
@@ -41,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
     tablerowcus: {
         border: 'none',
         '& td, & th': { // Áp dụng cho tất cả các ô
-            border: 'none', // Loại bỏ border cho td và th
             fontSize: '14px',
             fontFamily: '"Inter", sans-serif',
         },
@@ -51,7 +38,24 @@ const useStyles = makeStyles((theme) => ({
         color: 'rgba(58, 65, 111, 0.7)',
         fontSize: '14px',
         fontFamily: '"Inter", sans-serif',
-        fontWeight: 400
+        fontWeight: 400,
+    },
+    fullName: {
+        color: 'rgba(58, 65, 111, 0.7)',
+        fontSize: '14px',
+        fontFamily: '"Inter", sans-serif',
+        fontWeight: 400,
+        maxWidth: '200px'
+    },
+    address: {
+        color: 'rgba(58, 65, 111, 0.7)',
+        fontSize: '14px',
+        fontFamily: '"Inter", sans-serif',
+        fontWeight: 400,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        maxWidth: '200px'
     },
     status: {
         fontSize: '0.95rem',
@@ -69,9 +73,8 @@ const useStyles = makeStyles((theme) => ({
 
 const UserTable = () => {
     const classes = useStyles();
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(20);
     const [addForm, setAddForm] = React.useState(false);
+    const [updateForm, setUpdateForm] = React.useState(false);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -83,23 +86,79 @@ const UserTable = () => {
     };
 
     const handleAddForm = () => {
-        setAddForm(!addForm);
+        setAddForm(true);
+    }
+
+    const handleBackAddForm = () => {
+        setAddForm(false);
+    }
+
+    const handleUpdateForm = () => {
+        setUpdateForm(true);
+    }
+
+    const handleBackUpdateForm = () => {
+        setUpdateForm(false);
+    }
+
+    const { owners, loading, error, rowsPerPage, page, setPage, setRowsPerPage, totalOwners, addOwner, updateOwnerLocked } = React.useContext(OwnerContext);
+    if (loading) {
+        return <CircularProgress />
+    }
+    if (error) {
+        return <div>Error: {error}</div>
     }
 
     const ownerOverview = [
-        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu', total: 10 },
-        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu', total: 10 },
-        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu', total: 10 }
+        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu', total: totalOwners },
+        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu bị khóa', total: 10 },
+        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu đang hoạt động', total: 10 }
     ]
+
+    const handleLock = (id, isLocked) => {
+        Swal.fire({
+            title: 'Xác nhận',
+            text: `Bạn có chắc chắn muốn ${isLocked === 1 ? 'mở' : ''} khóa tài khoản này không?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: `Có, ${isLocked === 1 ? 'mở' : ''} khóa tài khoản`,
+            cancelButtonText: 'Hủy',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const lockResult = await updateOwnerLocked(id);
+                if (lockResult.status === 'success') {
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: `Tài khoản đã được ${isLocked === 1 ? 'mở' : ''} khóa thành công.`,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Thất bại!',
+                        text: lockResult.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                    });
+                }
+            }
+        });
+    };
 
     return (
         <>
-            <Box sx={{
-                width: '100%',
-                height: '100%',
-                overflowY: 'auto'
-            }}>
-                {addForm === false && (
+
+            {addForm ? (
+                <AdminOwner setAddForm={setAddForm} addOwner={addOwner} onClose={handleBackAddForm} />
+            ) : updateForm ? (
+                <AdminOwnerUpdate onClose={handleBackUpdateForm} />
+            ) : (
+                <Box sx={{
+                    width: '100%',
+                    height: '100%',
+                    overflowY: 'auto',
+                    padding: 3
+                }}>
                     <Box>
                         <Box sx={{
                             width: '100%',
@@ -225,67 +284,74 @@ const UserTable = () => {
                                         },
                                     }}>Thêm mới</Button>
                             </Box>
-                            <TableContainer component={Box} sx={{ maxHeight: 'none' }}>
-                                <Table stickyHeader className='owner-table' aria-label="simple table">
+                            <TableContainer component={Box} sx={{ maxHeight: 'auto' }}>
+                                <Table className='owner-table' aria-label="simple table">
                                     <TableHead>
                                         <TableRow className={classes.tablerowcus}>
-                                            <TableCell>Họ tên</TableCell>
-                                            <TableCell>Ngày sinh</TableCell>
-                                            <TableCell>Địa chỉ</TableCell>
+                                            <TableCell align='center'>Họ tên</TableCell>
+                                            <TableCell align='center'>Ngày sinh</TableCell>
+                                            <TableCell align='center'>Địa chỉ</TableCell>
                                             <TableCell align='center'>Số điện thoại</TableCell>
                                             <TableCell align='center'>Giới tính</TableCell>
                                             <TableCell align='center'>Trạng thái</TableCell>
-                                            <TableCell align='center'>Xem thông tin</TableCell>
+                                            <TableCell align='center'>Tùy chọn</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                                        {owners?.map((owner) => (
                                             <TableRow
-                                                key={row.id}
+                                                key={owner.id}
                                                 sx={{
                                                     '&:last-child td, &:last-child th': { border: 0 },
                                                 }}
                                                 className={classes.tablerowcus}
                                             >
-                                                <TableCell component="th" scope="row" sx={{ paddingTop: '10px', paddingBottom: '10px' }} >
+                                                <TableCell component="th" scope="row" className={classes.fullName} sx={{ paddingTop: '10px', paddingBottom: '10px' }} >
                                                     <Grid2 container alignItems='center'>
                                                         <Grid2 item>
-                                                            <Avatar alt={row.name} src='.' className={classes.avatar} />
+                                                            <Avatar alt={owner.fullName} src='.' className={classes.avatar} />
                                                         </Grid2>
                                                         <Grid2 sx={{ marginLeft: 2 }}>
-                                                            <Typography className={classes.name}>{row.name}</Typography>
+                                                            <Typography className={classes.name}>{owner.fullName}</Typography>
                                                         </Grid2>
                                                     </Grid2>
                                                 </TableCell>
-                                                <TableCell>
-                                                    <Typography className={classes.name}>{row.date}</Typography>
+                                                <TableCell align='center'>
+                                                    <Typography className={classes.name}>{formatDate(owner.dateOfBirth)}</Typography>
                                                 </TableCell>
-                                                <TableCell className={classes.name}>{row.add}</TableCell>
+                                                <TableCell className={classes.address}>{owner.address}</TableCell>
                                                 <TableCell align='center' className={classes.name}>
-                                                    {row.phone}
+                                                    {owner.phoneNumber}
                                                 </TableCell>
                                                 <TableCell align='center' className={classes.name}>
-                                                    {row.gender}
+                                                    {owner.gender === 0 ? 'Nam' : 'Nữ'}
                                                 </TableCell>
                                                 <TableCell align='center'>
-                                                    <Typography
-                                                        className={classes.status}
-                                                        style={{
-                                                            background: ((row.status === 'Active' && 'rgb(119, 220, 48)') || (row.status === 'Block' && 'rgb(245, 59, 71)'))
-                                                        }}
-                                                    >{row.status}
+                                                    <Typography sx={{
+                                                        backgroundColor: owner.isLocked === 0 ? '#E4F6D6' : '#FFE2E3',
+                                                        color: owner.isLocked === 0 ? '#56CA00' : '#FF4C51',
+                                                        padding: '3px 10px',
+                                                        borderRadius: '15px',
+                                                        fontWeight: 'bold',
+                                                        fontSize: '12px'
+                                                    }}
+                                                    >{owner.isLocked === 0 ? 'ACTIVE' : 'BLOCK'}
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell align='center'>
                                                     <IconButton aria-label="delete" sx={{
                                                         color: 'rgb(33, 82, 255)'
-                                                    }}>
+                                                    }}
+                                                        onClick={handleUpdateForm}>
                                                         <RiInformationFill />
                                                     </IconButton>
-                                                    <IconButton aria-label="delete" sx={{
-                                                        color: 'rgb(245, 59, 71)'
-                                                    }}>
-                                                        <IoMdTrash />
+                                                    <IconButton
+                                                        aria-label="delete"
+                                                        sx={{
+                                                            color: `${owner.isLocked === 1 ? 'rgb(0, 0, 0)' : 'rgb(245, 59, 71)'}`
+                                                        }}
+                                                        onClick={() => handleLock(owner.id, owner.isLocked)}>
+                                                        {owner.isLocked === 1 ? <FaUnlock /> : <FaLock />}
                                                     </IconButton>
                                                 </TableCell>
                                             </TableRow>
@@ -294,9 +360,9 @@ const UserTable = () => {
                                     <TableFooter>
                                         <TableRow>
                                             <TablePagination className='custom-page'
-                                                rowsPerPageOptions={[5, 15, 25]}
+                                                rowsPerPageOptions={[5, 10, 15, 20]}
                                                 component="div"
-                                                count={rows.length}
+                                                count={totalOwners}
                                                 rowsPerPage={rowsPerPage}
                                                 page={page}
                                                 onPageChange={handleChangePage}
@@ -313,10 +379,8 @@ const UserTable = () => {
                             </TableContainer>
                         </Box>
                     </Box>
-                )}
-                {addForm === true && (<AdminOwner />)}
-
-            </Box>
+                </Box>
+            )}
 
 
             {/* Display selected user info */}
@@ -332,5 +396,7 @@ const UserTable = () => {
         </>
     );
 }
+
+
 
 export default UserTable;

@@ -1,155 +1,114 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomTextField from "../CustomTextField";
 
-// const AddYardDetailForm = ({ open, handleClose }) => {
-
-//     const [formData, setFormData] = useState({
-//         tenSan: '',
-//         khuVuc: '',
-//         sucChua: '',
-//         ghiChu: '',
-//         gia: '',
-//         giapeak: '',
-//     });
-
-//     return (
-//         <React.Fragment>
-//             <Dialog
-//                 open={open}
-//                 onClose={handleClose}
-//                 aria-labelledby="alert-dialog-title"
-//                 aria-describedby="alert-dialog-description"
-//             >
-//                 <DialogTitle id="alert-dialog-title">
-//                     {<Typography variant='h6' sx={{
-//                         fontWeight: 600,
-//                         background: 'linear-gradient(310deg, rgb(33, 82, 255), rgb(33, 212, 253))', // Màu gradient
-//                         WebkitBackgroundClip: 'text', // Clip nền cho chữ
-//                         WebkitTextFillColor: 'transparent', // Làm màu chữ trong suốt
-//                         display: 'inline-block', // Đảm bảo gradient áp dụng đúng cho chữ
-//                     }}>Thêm thông tin chi tiết sân</Typography>}
-//                 </DialogTitle>
-//                 <DialogContent>
-//                     <CustomTextField
-//                         label={"Nhập tên sân"}
-//                         placeholder={"Nhập tên sân"}
-//                         password={false}
-//                         regex={/^[a-zA-Z]{3,}$/}
-//                         error={"Vui lòng nhập đúng định dạng"}
-//                         width={"500px"} />
-//                     <Box sx={{
-//                         display: 'flex',
-//                         width: '100%',
-//                         justifyContent: 'space-between'
-//                     }}>
-//                         <CustomTextField
-//                             label={"Nhập khu vực"}
-//                             placeholder={"Nhập khu vực"}
-//                             password={false}
-//                             regex={/^[a-zA-Z]{3,}$/}
-//                             error={"Vui lòng nhập đúng định dạng"}
-//                             width={"245px"} />
-//                         <CustomTextField
-//                             label={"Nhập sức chứa"}
-//                             placeholder={"Nhập sức chứa"}
-//                             password={false}
-//                             regex={/^[a-zA-Z]{3,}$/}
-//                             error={"Vui lòng nhập đúng định dạng"}
-//                             width={"245px"} />
-//                     </Box>
-//                     <CustomTextField
-//                         label={"Nhập sức chứa"}
-//                         placeholder={"Nhập sức chứa"}
-//                         password={false}
-//                         regex={/^[a-zA-Z]{3,}$/}
-//                         error={"Vui lòng nhập đúng định dạng"}
-//                         width={"500px"}
-//                         multiline={true} />
-//                     <Box sx={{
-//                         display: 'flex',
-//                         width: '100%',
-//                         justifyContent: 'space-between'
-//                     }}>
-//                         <CustomTextField
-//                             label={"Nhập khu vực"}
-//                             placeholder={"Nhập khu vực"}
-//                             password={false}
-//                             regex={/^[a-zA-Z]{3,}$/}
-//                             error={"Vui lòng nhập đúng định dạng"}
-//                             width={"245px"} />
-//                         <CustomTextField
-//                             label={"Nhập sức chứa"}
-//                             placeholder={"Nhập sức chứa"}
-//                             password={false}
-//                             regex={/^[a-zA-Z]{3,}$/}
-//                             error={"Vui lòng nhập đúng định dạng"}
-//                             width={"245px"} />
-//                     </Box>
-//                 </DialogContent>
-//                 <DialogActions sx={{
-//                     padding: 4
-//                 }}>
-//                     <Button onClick={handleClose}>Disagree</Button>
-//                     <Button
-//                         variant='contained'
-//                         sx={{
-//                             //33, 82, 255
-//                             background: 'linear-gradient(310deg, rgb(33, 82, 255), rgb(33, 212, 253))',
-//                             color: 'white',
-//                             boxShadow: 'none',
-//                             '&:hover': {
-//                                 boxShadow: 'none'
-//                             },
-//                         }}>Thêm</Button>
-//                 </DialogActions>
-//             </Dialog>
-//         </React.Fragment>
-//     )
-// }
-
 const AddYardDetailForm = ({ open, handleClose, handleAddDetail }) => {
+
+    const [formIsErrorData, setFormIsErrorData] = useState({
+        name: null,
+        location: null,
+        capacity: null,
+        description: null,
+        price: null,
+        pricePeak: null,
+    })
+
     const [formData, setFormData] = useState({
-        tenSan: '',
-        khuVuc: '',
-        sucChua: '',
-        ghiChu: '',
-        gia: '',
-        giapeak: '',
+        name: '',
+        location: '',
+        capacity: '',
+        description: '',
+        price: '',
+        pricePeak: '',
     });
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        console.log(`Thay đổi: ${name} = ${value}`); // Kiểm tra xem hàm có được gọi không
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+    const handleFieldChange = (field, value, isValid) => {
+        if (isValid) {
+            setFormData((prevData) => ({
+                ...prevData,
+                [field]: value,
+            }));
+        } else {
+            setFormData((prevData) => ({
+                ...prevData,
+                [field]: '',
+            }));
+        }
     };
 
     const handleSubmit = () => {
-        // Kiểm tra dữ liệu nhập
-        if (!formData.tenSan || !formData.khuVuc || !formData.sucChua) {
-            alert("Vui lòng điền đủ thông tin!");
-            return; // Ngăn không cho tiếp tục nếu chưa đủ thông tin
+        let isValidForm = true;
+        if (formData.name === '') {
+            setFormIsErrorData((prevData) => ({
+                ...prevData,
+                name: false,
+            }));
+            isValidForm = false;
         }
 
-        // Gọi handleAddDetail với dữ liệu từ form
-        handleAddDetail({
-            name: formData.tenSan,
-            area: formData.khuVuc,
-            capacity: formData.sucChua,
-        });
-        handleClose(); // Đóng form sau khi thêm
-        setFormData({ // Reset formData sau khi đóng
-            tenSan: '',
-            khuVuc: '',
-            sucChua: '',
-            ghiChu: '',
-            gia: '',
-            giapeak: '',
-        });
+        if (formData.location === '') {
+            setFormIsErrorData((prevData) => ({
+                ...prevData,
+                location: false,
+            }));
+            isValidForm = false;
+        }
+
+        if (formData.capacity === '') {
+            setFormIsErrorData((prevData) => ({
+                ...prevData,
+                capacity: false,
+            }));
+            isValidForm = false;
+        }
+
+        if (formData.price === '') {
+            setFormIsErrorData((prevData) => ({
+                ...prevData,
+                price: false,
+            }));
+            isValidForm = false;
+        }
+
+        if (formData.pricePeak === '') {
+            setFormIsErrorData((prevData) => ({
+                ...prevData,
+                pricePeak: false,
+            }));
+            isValidForm = false;
+        }
+
+        if (isValidForm) {
+            handleAddDetail(formData);
+            resetForm();
+            handleClose();
+        }
     };
+
+    useEffect(() => {
+        if (!open) {
+            resetForm();
+        }
+    }, [open]);
+
+    const resetForm = () => {
+        setFormData({
+            name: '',
+            location: '',
+            capacity: '',
+            description: '',
+            price: '',
+            pricePeak: '',
+        });
+        setFormIsErrorData({
+            name: null,
+            location: null,
+            capacity: null,
+            description: null,
+            price: null,
+            pricePeak: null,
+        });
+    }
 
     return (
         <React.Fragment>
@@ -158,6 +117,9 @@ const AddYardDetailForm = ({ open, handleClose, handleAddDetail }) => {
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                sx={{
+                    zIndex: 10000
+                }}
             >
                 <DialogTitle id="alert-dialog-title">
                     <Typography variant="h6" sx={{
@@ -175,20 +137,26 @@ const AddYardDetailForm = ({ open, handleClose, handleAddDetail }) => {
                     <CustomTextField
                         label="Nhập tên sân"
                         placeholder="Nhập tên sân"
-                        regex={/^[a-zA-Z\s]{3,}$/}
+                        regex={/^.{1,500}$/}
                         error="Vui lòng nhập tên hợp lệ"
                         width="500px"
-                        onChange={handleChange}
+                        name='name' // Thêm name
+                        value={formData.name} // Kết nối với state
+                        onChange={(value, isValid) => handleFieldChange('name', value, isValid)}
+                        setValid={formIsErrorData.name}
                     />
 
                     <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
                         <CustomTextField
                             label="Nhập khu vực"
                             placeholder="Nhập khu vực"
-                            regex={/^[a-zA-Z\s]{3,}$/}
+                            regex={/^.{1,500}$/}
                             error="Vui lòng nhập khu vực hợp lệ"
                             width="245px"
-                            onChange={handleChange}
+                            name='location' // Thêm name
+                            value={formData.location} // Kết nối với state
+                            onChange={(value, isValid) => handleFieldChange('location', value, isValid)}
+                            setValid={formIsErrorData.location}
                         />
                         <CustomTextField
                             label="Nhập sức chứa"
@@ -196,18 +164,23 @@ const AddYardDetailForm = ({ open, handleClose, handleAddDetail }) => {
                             regex={/^\d+$/}
                             error="Vui lòng nhập số lượng hợp lệ"
                             width="245px"
-                            onChange={handleChange}
+                            name='capacity' // Thêm name
+                            value={formData.capacity} // Kết nối với state
+                            onChange={(value, isValid) => handleFieldChange('capacity', value, isValid)}
+                            setValid={formIsErrorData.capacity}
                         />
                     </Box>
 
                     <CustomTextField
                         label="Ghi chú"
                         placeholder="Nhập ghi chú"
-                        multiline={true}
                         regex={/^.{0,500}$/}
+                        multiline={true}
                         error="Ghi chú không được quá 500 ký tự"
                         width="500px"
-                        onChange={handleChange}
+                        name='description' // Thêm name
+                        value={formData.description} // Kết nối với state
+                        onChange={(value, isValid) => handleFieldChange('description', value, isValid)}
                     />
 
                     <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
@@ -217,7 +190,10 @@ const AddYardDetailForm = ({ open, handleClose, handleAddDetail }) => {
                             regex={/^\d+(\.\d{1,2})?$/}
                             error="Vui lòng nhập giá hợp lệ"
                             width="245px"
-                            onChange={handleChange}
+                            name='price' // Thêm name
+                            value={formData.price} // Kết nối với state
+                            onChange={(value, isValid) => handleFieldChange('price', value, isValid)}
+                            setValid={formIsErrorData.price}
                         />
                         <CustomTextField
                             label="Giá cao điểm"
@@ -225,7 +201,10 @@ const AddYardDetailForm = ({ open, handleClose, handleAddDetail }) => {
                             regex={/^\d+(\.\d{1,2})?$/}
                             error="Vui lòng nhập giá hợp lệ"
                             width="245px"
-                            onChange={handleChange}
+                            name='pricePeak' // Thêm name
+                            value={formData.pricePeak} // Kết nối với state
+                            onChange={(value, isValid) => handleFieldChange('pricePeak', value, isValid)}
+                            setValid={formIsErrorData.pricePeak}
                         />
                     </Box>
                 </DialogContent>

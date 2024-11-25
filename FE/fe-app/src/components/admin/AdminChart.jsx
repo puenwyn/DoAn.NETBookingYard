@@ -79,7 +79,7 @@ const ProgressStats = () => {
     )
 }
 
-const CircularProgressWithLabel = (props) => {
+export const CircularProgressWithLabel = (props) => {
     const { value, color = 'primary.main', ...otherProps } = props; // Thêm prop color
 
     return (

@@ -28,7 +28,7 @@
     visibility: hidden;
     transition: all .3s ease-in-out;
     opacity: 0;
-    z-index: 100;
+    z-index: 10000000;
     background-color: #fff;
 }
 

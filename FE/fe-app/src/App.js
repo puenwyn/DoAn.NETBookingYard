@@ -5,6 +5,7 @@ import { AppRoutes } from './routes/AppRouter';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import DetailPage from './pages/client/DetailPage';
+import { AuthProvider } from './context/AuthContext';
 // import { UserContext, UserProvider } from './context/UserContext';
 
 
@@ -21,7 +22,9 @@ const App = () => {
         //     </BrowserRouter>
         // </UserProvider>
         <BrowserRouter>
-            <AppRoutes />
+            <AuthProvider>
+                <AppRoutes />
+            </AuthProvider>
         </BrowserRouter>
     );
 };
@@ -57,11 +60,11 @@ const App = () => {
 //                 gender: parseInt(owner.gender), // Chuyển đổi thành số nguyên
 //                 isLocked: parseInt(owner.isLocked), // Chuyển đổi thành số nguyên
 //             };
-    
+
 //             console.log(ownerData); // In ra dữ liệu owner để kiểm tra
 //             const response = await axios.post('https://localhost:7292/api/v1/owner', ownerData);
 //             console.log(response.data);
-    
+
 //             // Reset form after submission
 //             setOwner({
 //                 username: '',
