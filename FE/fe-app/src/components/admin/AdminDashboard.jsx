@@ -4,9 +4,10 @@ import { FaRegCalendarAlt, FaSortUp, FaSortDown, FaCircle } from "react-icons/fa
 import { GrPowerReset } from "react-icons/gr";
 import { LuWallet } from "react-icons/lu";
 import '../../styles/components/adminDashboard.css';
-import DoughnutChart from './DoughnutChart';
-import BarChart from './BarChart';
-import { IconButton } from '@mui/material';
+import { DoughnutChart } from './DoughnutChart';
+import { BarChart } from './BarChart';
+import { Box, IconButton } from '@mui/material';
+import MyDatePicker from './CalendarDashboard';
 
 const AdminDashboard = ({ darkMode }) => {
     const [optionLine, setOptionLine] = useState('1');
@@ -32,6 +33,22 @@ const AdminDashboard = ({ darkMode }) => {
                     ))}
                 </div>
             </div>
+
+            {/* Bổ sung Dashboard */}
+            <div className='dashboard-calendar mt-3 mb-2 d-flex'>
+                <div className='dashboard-image'>
+
+                </div>
+                <div className='dashboard-basic ms-3'>
+                    <div className='dashboard-weather'>
+                        32 độ C
+                    </div>
+                    <div className='dashboard-calendar-pick bg-white'>
+                        <MyDatePicker />
+                    </div>
+                </div>
+            </div>
+
             <div className={`line-chart-dashboard d-flex mt-3 ${darkMode ? 'dark-mode' : ''}`}>
                 <div className='poster'>
                     <div className='poster-color'></div>

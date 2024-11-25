@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<OwnerContext>(option =>
+builder.Services.AddDbContext<ApplicationContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<YardContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -26,6 +26,12 @@ builder.Services.AddDbContext<YardContext>(option =>
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 builder.Services.AddScoped<OwnerService>();
 builder.Services.AddScoped<IYardReponsitory, YardReponsitory>();
+builder.Services.AddScoped<YardService>();
+
+builder.Services.AddDbContext<YardContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IYardRepository, YardRepository>(); // Repository cho Yard
 builder.Services.AddScoped<YardService>();
 
 // Thêm các dịch vụ cho Swagger
