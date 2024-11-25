@@ -1,4 +1,4 @@
-﻿// Data/AppDbContext.cs
+
 using BEBookingYard.DTO;
 using BEBookingYard.Models;
 using Microsoft.EntityFrameworkCore;
@@ -20,4 +20,3 @@ public class YardContext : DbContext
     }
     public DbSet<YardImage> YardImage { get; set; }
 
-}

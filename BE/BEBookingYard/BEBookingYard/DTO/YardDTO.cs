@@ -1,10 +1,10 @@
-﻿using BEBookingYard.Models;
-
+using BEBookingYard.Models;
 namespace BEBookingYard.DTO
 {
     public class YardDTO
     {
         public int Id { get; set; }
+
         public int YardType { get; set; }
         public string Name { get; set; }
         public string NameTransformed { get; set; }

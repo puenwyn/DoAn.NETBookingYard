@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BEBookingYard")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+674d4171350c70eeba98c94e39c86012f384ea56")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da4db888f82f8159ea04717da0a3a861aba516b8")]
 [assembly: System.Reflection.AssemblyProductAttribute("BEBookingYard")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BEBookingYard")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

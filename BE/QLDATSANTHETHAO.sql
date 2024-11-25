@@ -1,4 +1,4 @@
-create database QLDATSANTHETHAO
+/* create database QLDATSANTHETHAO */
 use QLDATSANTHETHAO
 
 CREATE TABLE USERS

@@ -1,5 +1,5 @@
-﻿using BEBookingYard.DTO;
 using System.ComponentModel.DataAnnotations;
+using BEBookingYard.DTO;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BEBookingYard.Models
@@ -31,14 +31,14 @@ namespace BEBookingYard.Models
 
         [Required(ErrorMessage = "Amenity is required")]
         public int Amenity { get; set; }
-
         [Required(ErrorMessage = "IsDelete is required")]
         [Range(0, 1, ErrorMessage = "IsDelete must be 0 or 1")]
         public short IsDelete { get; set; }
+
        
         public virtual ICollection<YardImage> YardImages { get; set; }
         public List<RatingDTO> Ratings { get; set; } // Danh sách đánh giá
         public List<YardDetail> Details { get; set; }
         public List<AmenitiesDTO> Amenities { get; set; } // Danh sách tiện nghi
-    }
+ }
 }
