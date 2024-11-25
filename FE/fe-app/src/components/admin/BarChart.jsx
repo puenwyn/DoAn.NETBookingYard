@@ -12,7 +12,7 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const barChartData = [
+const dataset = [
     { label: 'Red', stat: 31 },
     { label: 'Blue', stat: 28 },
     { label: 'Yellow', stat: 6 },
@@ -27,13 +27,13 @@ const barChartData = [
     { label: 'Pink', stat: 28 },
 ]
 
-const BarChart = ({ dataset }) => {
+const BarChart = ({ dataset, horizontal }) => {
     const data = {
-        labels: barChartData.map((item) => item.label),
+        labels: dataset.map((item) => item.label),
         datasets: [
             {
                 label: 'My First Dataset',
-                data: barChartData.map((item) => item.stat),
+                data: dataset.map((item) => item.stat),
                 backgroundColor: [
                     'rgba(29, 93, 234, 1)',
                 ],
@@ -46,6 +46,8 @@ const BarChart = ({ dataset }) => {
 
     const options = {
         responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: horizontal ? 'y' : 'x',
         plugins: {
             legend: {
                 position: 'top',
@@ -71,7 +73,7 @@ const BarChart = ({ dataset }) => {
     };
 
     return (
-        <div style={{ position: 'relative', width: '70%', height: '100%' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <Bar data={data} options={options} />
         </div>
     );

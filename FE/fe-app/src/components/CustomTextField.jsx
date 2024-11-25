@@ -1,20 +1,40 @@
 import { InputAdornment, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { MdOutlineErrorOutline } from "react-icons/md";
 
-const CustomTextField = ({ label, placeholder, password, regex, error, width, multiline, readOnly }) => {
+const CustomTextField = ({ label, placeholder, password, regex, error, width, multiline, text, readOnly, onChange, type, confirmPassword, hashedPassword, setValid = null }) => {
     const [inputValue, setInputValue] = useState('');
     const [isValid, setIsValid] = useState(null);
+
+    React.useEffect(() => {
+        setInputValue(text);
+    }, [text]);
+
+    React.useEffect(() => {
+        if (confirmPassword && inputValue) { // Kiểm tra khi có confirmPassword và inputValue không rỗng
+            // alert(isValid)
+            setIsValid(inputValue === hashedPassword);
+        }
+    }, [hashedPassword, confirmPassword, inputValue]);
+
+
+    useEffect(() => {
+        setIsValid(setValid);
+    }, [setValid])
 
     const handleChange = (e) => {
         const value = e.target.value;
         setInputValue(value);
 
-        if (regex?.test(value)) { // Kiểm tra nếu regex có tồn tại
-            setIsValid(true);
-        } else {
-            setIsValid(false);
+        const valid = regex?.test(value);
+
+        if (!confirmPassword) {
+            setIsValid(valid);
+        }
+
+        if (onChange) {
+            onChange(value, valid);  // Truyền cả giá trị và trạng thái hợp lệ lên component cha
         }
     };
 
@@ -26,16 +46,16 @@ const CustomTextField = ({ label, placeholder, password, regex, error, width, mu
                 value={inputValue}
                 onChange={handleChange}
                 variant="outlined"
-                type={!password ? 'text' : 'password'}
-                multiline={multiline || false} // Điều chỉnh thành textarea nếu prop multiline = true
-                rows={multiline ? 3 : 1} // Điều chỉnh số dòng nếu là textarea
+                type={type || (password ? 'password' : 'text')}
+                multiline={multiline || false}
+                rows={multiline ? 3 : 1}
                 InputProps={{
                     sx: {
-                        padding: multiline ? 2 : 0,
-                        height: multiline ? 'auto' : '40px', // Điều chỉnh chiều cao cho textarea
+                        padding: `${multiline ? '12px 0 12px 12px' : '0'}`,
+                        height: multiline ? 'auto' : '40px',
                         fontSize: '15px',
                     },
-                    readOnly: readOnly || false, // Điều chỉnh trạng thái chỉ đọc
+                    readOnly: readOnly || false,
                     endAdornment: (
                         <InputAdornment position="end">
                             {isValid === null ? null : (
@@ -52,7 +72,7 @@ const CustomTextField = ({ label, placeholder, password, regex, error, width, mu
                     "& .MuiOutlinedInput-root": {
                         "& fieldset": {
                             borderColor: isValid === null ? "rgb(244, 244, 244)" : (isValid ? "rgb(102, 212, 50)" : "rgb(253, 92, 112)"),
-                            borderWidth: '2px',
+borderWidth: '2px',
                         },
                         "&:hover fieldset": {
                             borderColor: isValid === null ? "rgb(244, 244, 244)" : (isValid ? "rgb(102, 212, 50)" : "rgb(253, 92, 112)"),

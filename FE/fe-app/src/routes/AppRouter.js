@@ -11,6 +11,11 @@ import CartPage from "../pages/client/CartPage";
 import LinkHeader from "../components/LinkHeader";
 import NotFound from "../pages/client/ErrorPages/NotFound";
 import YardType from "../pages/client/YardType";
+import AdminLogin from '../components/admin/AdminLogIn';
+import { AuthProvider } from "../context/AuthContext";
+import { UserProvider } from "../context/UserContext";
+import ForgotPassword from "../pages/client/ForgotPassword";
+import Wishlist from "../components/Wishlist";
 
 export const AppRoutes = () => {
     const location = useLocation();
@@ -31,11 +36,30 @@ export const AppRoutes = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/san-the-thao/:id" element={<DetailPage />} />
                 <Route path='/my-cart' element={<CartPage />} />
+                <Route path='/wishlist' element={<Wishlist />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/yard-types/:type" element={<YardType />} />
             </Route>
-            <Route path="/auth" element={<LoginPage />} />
-            <Route path="/auth/user-info" element={<UserInfoPage />} />
+            <Route path="/auth"
+                element={
+                    <AuthProvider>
+                        <LoginPage />
+                    </AuthProvider>
+                } />
+            <Route path="/auth/user-info"
+                element={
+                    <UserProvider>
+                        <AuthProvider>
+                            <UserInfoPage />
+                        </AuthProvider>
+                    </UserProvider>
+                } />
+            <Route path="/auth/forgot-password"
+                element={
+                    <AuthProvider>
+                        <ForgotPassword />
+                    </AuthProvider>
+                } />
         </Routes>
     );
 }

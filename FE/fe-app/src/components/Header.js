@@ -4,6 +4,7 @@ import Search from './Search';
 import '../styles/components/header.css';
 import HeaderAction from './HeaderAction';
 import Navigation from './Navigation';
+import { YardTypeProvider } from '../context/YardTypeContext';
 
 const Header = () => {
     return (
@@ -30,7 +31,9 @@ const Header = () => {
                     </div>
                 </div>
             </div>
-            <Navigation />
+            <YardTypeProvider>
+                <Navigation />
+            </YardTypeProvider>
         </header>
     );
 };

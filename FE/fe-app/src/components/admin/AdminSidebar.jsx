@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CiUser } from "react-icons/ci";
 import { MdOutlineDashboard, MdAccountBox, MdOutlineSpaceDashboard, MdEditCalendar, MdSportsSoccer, MdGroup, MdHome, MdInsertChartOutlined } from "react-icons/md";
 import { TbSoccerField } from "react-icons/tb";
+import { RiDiscountPercentFill } from "react-icons/ri";
 import { LuWallet } from "react-icons/lu";
 import { HiOutlineLogout } from "react-icons/hi";
 import '../../styles/components/adminSidebar.css';
@@ -101,6 +102,7 @@ const AdminSideBar = ({ darkMode, optionSidebar, setOptionSideBar, expand }) => 
         { label: 'Quản lý sân', icon: <MdSportsSoccer className='fs-5' />, value: 'yard' },
         { label: 'Quản lý người dùng', icon: <MdGroup className='fs-5' />, value: 'user' },
         { label: 'Quản lý chủ sân', icon: <TbSoccerField className='fs-5' />, value: 'owner' },
+        { label: 'Quản lý mã giảm giá', icon: <RiDiscountPercentFill className='fs-5' />, value: 'voucher' },
     ];
 
     return (

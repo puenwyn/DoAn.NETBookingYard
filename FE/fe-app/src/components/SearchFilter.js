@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
 import { FaChevronDown } from 'react-icons/fa';
 import '../styles/components/searchFilter.css';
 import { IoIosSearch, IoMdRefresh } from "react-icons/io";
@@ -11,6 +11,9 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { useYardTypeContext } from '../context/YardTypeContext';
+import { useAddress } from '../context/AddressContext';
+import { CustomComboBox } from './admin/AdminYardDetail';
 
 const category = [
     { id: 1, category_name: 'Sân bóng đá' },
@@ -42,6 +45,7 @@ const Alert = React.forwardRef((props, ref) => (
 ));
 
 const SearchFilter = () => {
+    const { yardTypes } = useYardTypeContext();
     const fullText = 'Tìm kiếm sân thể thao...';
     const [placeholder, setPlaceholder] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -54,6 +58,28 @@ const SearchFilter = () => {
     const [selectedPrice, setSelectedPrice] = useState('Tất cả');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertInformation, setAlertInformation] = useState('');
+    const [areaText, setAreaText] = useState('Tất cả');
+    const [provinceText, setProvinceText] = useState('');
+    const [districtText, setDistrictText] = useState('');
+    const [wardText, setWardText] = useState('');
+
+    const {
+        provinces,
+        districts,
+        wards,
+selectedProvince,
+        selectedDistrict,
+        selectedWard,
+        setSelectedProvince,
+        setSelectedDistrict,
+        setSelectedWard
+    } = useAddress();
+
+    useEffect(() => {
+        setAreaText(
+            `${wardText !== '' ? wardText + ',' : ''} ${districtText !== '' ? districtText + ',' : ''} ${provinceText !== '' ? provinceText : ''}`
+        )
+    }, [selectedProvince, selectedDistrict, selectedWard])
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -87,8 +113,8 @@ const SearchFilter = () => {
 
     const handleToggleDropdown = (dropdownId) => {
         if (dropdownId === 'area' && (selectedCategory === 'Danh mục sân' || selectedRating === 'Tất cả' || selectedPrice === 'Tất cả')) {
-            if(dropdownId === 'area') setOpenDropdown(dropdownId);
-            return; 
+            if (dropdownId === 'area') setOpenDropdown(dropdownId);
+            return;
         }
         setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
     };
@@ -102,6 +128,15 @@ const SearchFilter = () => {
         setSelectedRating('Tất cả');
         setSelectedPrice('Tất cả');
         setAlertInformation('Làm mới thành công!');
+
+        setSelectedProvince('');
+        setSelectedWard('');
+        setSelectedDistrict('');
+
+        setAreaText('Tất cả')
+        setWardText('')
+        setDistrictText('')
+        setProvinceText('')
         setOpenSnackbar(true);
     };
 
@@ -115,11 +150,11 @@ const SearchFilter = () => {
     const handleToggle = (value, type) => () => {
         if (type === 'category') {
             setCheckedCategory(value);
-            setSelectedCategory(value ? category.find(r => r.id === value).category_name : 'Danh mục sân');
+            setSelectedCategory(value ? yardTypes.find(r => r.id === value).name : 'Danh mục sân');
         } else if (type === 'rating') {
             setCheckedRating(value);
             setSelectedRating(value ? rating.find(r => r.id === value).rating_select : 'Tất cả');
-        } else if (type === 'price') {
+} else if (type === 'price') {
             setCheckedPrice(value);
             setSelectedPrice(value ? priceRange.find(r => r.id === value).price_range : 'Tất cả');
         }
@@ -127,7 +162,7 @@ const SearchFilter = () => {
     };
 
     return (
-        <div style={{ background: '#f3f4f7' }} className='py-3'>
+        <div style={{ background: '#f3f4f7', position: 'sticky', top: '0px', zIndex: '10000' }} className='py-3'>
             <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                 <Alert severity="success" sx={{ width: '100%' }}>
                     {alertInformation}
@@ -143,7 +178,7 @@ const SearchFilter = () => {
                                         <FaChevronDown /><span className='ms-2'>{selectedCategory}</span>
                                     </Button>
                                     <List sx={{ width: '100%', maxWidth: 360 }} className={`dropdown-list shadow ${openDropdown === 'category' ? 'open' : ''}`}>
-                                        {category.map((value) => (
+                                        {yardTypes.map((value) => (
                                             <ListItem key={value.id} disablePadding>
                                                 <ListItemButton role={undefined} onClick={handleToggle(value.id, 'category')} dense>
                                                     <ListItemIcon>
@@ -155,11 +190,11 @@ const SearchFilter = () => {
                                                             inputProps={{ 'aria-labelledby': `checkbox-list-label-${value.id}` }}
                                                         />
                                                     </ListItemIcon>
-                                                    <ListItemText id={`checkbox-list-label-${value.id}`} primary={value.category_name} />
+                                                    <ListItemText id={`checkbox-list-label-${value.id}`} primary={value.name} />
                                                 </ListItemButton>
                                             </ListItem>
                                         ))}
-                                    </List>
+</List>
                                 </div>
                                 <div className='search-item search-input ps-2'>
                                     <div className='search-input'>
@@ -169,80 +204,78 @@ const SearchFilter = () => {
                                 </div>
                                 <div className='separator-search'></div>
                                 <div className='search-item search-dropdown'>
-                                    <Button onClick={() => handleToggleDropdown('area')} className='category d-flex flex-column align-items-start' aria-expanded={openDropdown === 'area'}>
+                                    <Button style={{ overflow: 'hidden' }} onClick={() => handleToggleDropdown('area')} className='category d-flex flex-column align-items-start' aria-expanded={openDropdown === 'area'}>
                                         <span className='d-flex align-items-center'>Khu vực<FaChevronDown className='ms-2' /></span>
-                                        <span>Tất cả</span>
+                                        <Tooltip sx={{ zIndex: 1000000000 }} title={areaText}>
+                                            <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{areaText}</span>
+                                        </Tooltip>
                                     </Button>
+
                                     <List sx={{ width: '100%', minWidth: '300px' }} className={`dropdown-list shadow ${openDropdown === 'area' ? 'open' : ''}`}>
-                                        <ListItem>
-                                            <FormControl fullWidth size="small">
-                                                {/* <InputLabel id="province-select-label" sx={{ backgroundColor: 'white', padding: '0 4px' }}>Tỉnh/Thành</InputLabel>
-                                                <Select
-                                                    labelId="province-select-label"
-                                                    id="province-select"
-                                                // value={selectedProvince}
-                                                // onChange={handleProvinceChange}
-                                                >
-                                                    <MenuItem value={1}>Hà Nội</MenuItem>
-                                                    <MenuItem value={2}>TP. Hồ Chí Minh</MenuItem>
-                                                    <MenuItem value={3}>Đà Nẵng</MenuItem>
-                                                </Select> */}
-                                            </FormControl>
+                                        <ListItem sx={{
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}>
+                                            <CustomComboBox
+                                                zIndex={10000}
+                                                labelTitle={"Chọn tỉnh/thành phố *"}
+                                                options={provinces.map(province => ({ value: province.code, label: province.name }))}
+                                                error={"Vui lòng chọn"}
+                                                width={'100%'}
+                                                onChange={(value, label) => {
+                                                    setProvinceText(label);
+                                                    setDistrictText('');
+                                                    setWardText('');
+                                                    setSelectedProvince(value); // Cập nhật tỉnh/thành phố
+                                                    setSelectedDistrict(''); // Đặt lại quận/huyện khi tỉnh/thành phố thay đổi
+                                                    setSelectedWard(''); // Đặt lại phường/xã khi tỉnh/thành phố thay đổi
+                                                    setOpenDropdown('area')
+                                                }}
+/>
                                         </ListItem>
 
-                                        <ListItem>
-                                            <FormControl fullWidth size="small">
-                                                <InputLabel id="district-select-label" sx={{ backgroundColor: 'white', padding: '0 4px' }}>Quận</InputLabel>
-                                                {/* <Select
-                                                    labelId="district-select-label"
-                                                    id="district-select"
-                                                // value={selectedDistrict}
-                                                // onChange={handleDistrictChange}
-                                                >
-                                                    <MenuItem value={1}>Quận 1</MenuItem>
-                                                    <MenuItem value={2}>Quận 2</MenuItem>
-                                                    <MenuItem value={3}>Quận 3</MenuItem>
-                                                </Select> */}
-                                            </FormControl>
+                                        <ListItem sx={{
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }}>
+                                            <CustomComboBox
+                                                zIndex={10000}
+                                                labelTitle={"Chọn quận/huyện *"}
+                                                options={selectedProvince ? districts.map(district => ({ value: district.code, label: district.name })) : []}
+                                                error={"Vui lòng chọn"}
+                                                width={'100%'}
+                                                onChange={(value, label) => {
+                                                    setDistrictText(label);
+                                                    setWardText('');
+                                                    setSelectedDistrict(value); // Cập nhật quận/huyện
+                                                    setSelectedWard(''); // Đặt lại phường/xã khi quận/huyện thay đổi
+                                                    setOpenDropdown('area')
+                                                }}
+                                            />
                                         </ListItem>
 
-                                        <ListItem>
-                                            <FormControl fullWidth size="small">
-                                                <InputLabel id="ward-select-label" sx={{ backgroundColor: 'white', padding: '0 4px' }}>Phường</InputLabel>
-                                                {/* <Select
-                                                    labelId="ward-select-label"
-                                                    id="ward-select"
-                                                // value={selectedWard}
-                                                // onChange={handleWardChange}
-                                                >
-                                                    <MenuItem value={1}>Phường 1</MenuItem>
-                                                    <MenuItem value={2}>Phường 2</MenuItem>
-                                                    <MenuItem value={3}>Phường 3</MenuItem>
-                                                </Select> */}
-                                            </FormControl>
-                                        </ListItem>
-
-                                        <ListItem>
-                                            <FormControl fullWidth size="small">
-                                                <InputLabel id="street-select-label" sx={{ backgroundColor: 'white', padding: '0 4px' }}>Đường</InputLabel>
-                                                {/* <Select
-                                                    labelId="street-select-label"
-                                                    id="street-select"
-                                                // value={selectedStreet}
-                                                // onChange={handleStreetChange}
-                                                >
-                                                    <MenuItem value={1}>Đường Lê Lợi</MenuItem>
-                                                    <MenuItem value={2}>Đường Nguyễn Huệ</MenuItem>
-                                                    <MenuItem value={3}>Đường Trần Hưng Đạo</MenuItem>
-                                                </Select> */}
-                                            </FormControl>
+                                        <ListItem sx={{
+                                            paddingTop: 0,
+                                        }}>
+                                            <CustomComboBox
+                                                zIndex={10000}
+                                                labelTitle={"Chọn phường/xã *"}
+                                                options={selectedDistrict ? wards.map(ward => ({ value: ward.code, label: ward.name })) : []}
+                                                error={"Vui lòng chọn"}
+                                                width={'100%'}
+                                                onChange={(value, label) => {
+                                                    setWardText(label)
+                                                    setSelectedWard(value); // Cập nhật phường/xã
+                                                    setOpenDropdown('area')
+                                                }}
+                                            />
                                         </ListItem>
                                     </List>
                                 </div>
                                 <div className='separator-search'></div>
                                 <div className='search-item search-dropdown'>
                                     <Button onClick={() => handleToggleDropdown('rating')} className='d-flex flex-column align-items-start' aria-expanded={openDropdown === 'rating'}>
-                                        <span className='d-flex align-items-center'>Đánh giá<FaChevronDown className='ms-2' /></span>
+<span className='d-flex align-items-center'>Đánh giá<FaChevronDown className='ms-2' /></span>
                                         <span>{selectedRating}</span>
                                     </Button>
                                     <List sx={{ width: '100%', maxWidth: 360 }} className={`dropdown-list shadow ${openDropdown === 'rating' ? 'open' : ''}`}>
@@ -277,7 +310,7 @@ const SearchFilter = () => {
                                                     <ListItemIcon>
                                                         <Checkbox
                                                             edge="start"
-                                                            checked={checkedPrice === value.id}
+checked={checkedPrice === value.id}
                                                             tabIndex={-1}
                                                             disableRipple
                                                             inputProps={{ 'aria-labelledby': `checkbox-list-label-${value.id}` }}

@@ -4,7 +4,7 @@ import { FaRegCalendarAlt, FaSortUp, FaSortDown, FaCircle } from "react-icons/fa
 import { GrPowerReset } from "react-icons/gr";
 import { LuWallet } from "react-icons/lu";
 import '../../styles/components/adminDashboard.css';
-import { DoughnutChart } from './DoughnutChart';
+import { DoughnutChart, DoughnutChart2 } from './DoughnutChart';
 import { BarChart } from './BarChart';
 import { Box, IconButton } from '@mui/material';
 import MyDatePicker from './CalendarDashboard';
@@ -15,6 +15,14 @@ const AdminDashboard = ({ darkMode }) => {
     const handleOptionLine = (option) => {
         setOptionLine(option);
     };
+
+    const dataset = [
+        { label: 'Red', stat: 31 },
+        { label: 'Blue', stat: 28 },
+        { label: 'Yellow', stat: 6 },
+        { label: 'Green', stat: 9 },
+        { label: 'Orange', stat: 7 },
+    ]
 
     return (
         <div className='admin-dashboard ms-4 d-flex flex-column'>
@@ -103,7 +111,7 @@ const AdminDashboard = ({ darkMode }) => {
                 <div className='pie-chart d-flex py-3 px-4 bg-white'>
                     <div className='pie-chart-main'>
                         <h5>Investment Categories</h5>
-                        <DoughnutChart />
+                        <DoughnutChart2 dataset={dataset} full={true} />
                         <p>You have invested in different types of categories to stats</p>
                     </div>
                     <div className='pie-chart-stats d-flex flex-wrap align-items-center ms-3'>
@@ -146,7 +154,7 @@ const AdminDashboard = ({ darkMode }) => {
                         <p>Total net revenue is 756.83 + <span className='text-green'>11.5%</span> increased in last week</p>
                     </div>
                     <div className='w-100 d-flex flex-column justify-content-center align-items-center'>
-                        <BarChart />
+                        {/* <BarChart /> */}
                         <div className='bar-note mt-3 p-3'>
                             <p>Top performing investment is <span className='fw-bold' style={{ color: 'rgb(71, 28, 168)' }}>Share holdings</span></p>
                         </div>

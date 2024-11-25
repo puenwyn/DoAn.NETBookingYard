@@ -1,6 +1,7 @@
-import { Avatar, Box, Button, Divider, Grid2, List, ListItem, ListItemAvatar, ListItemText, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Divider, Grid2, IconButton, List, ListItem, ListItemAvatar, ListItemText, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { formatDate } from "../../utils/FormatDate";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const UserInfoDetail = ({ title, info, update }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -45,7 +46,7 @@ const UserInfoDetail = ({ title, info, update }) => {
     );
 };
 
-const AdminUserDetail = ({ user }) => {
+const AdminUserDetail = ({ user, onClose }) => {
     const defaultUser = {
         fullName: "David Adam",
         role: "Manager",
@@ -92,7 +93,12 @@ const AdminUserDetail = ({ user }) => {
                     borderTopRightRadius: '1rem',
                     backgroundSize: 'cover',
                     backdropFilter: 'saturate(200%) blur(30px)',
-                }} />
+                }}>
+                    {user ? (
+                        "xin chào"
+                    ) : null}
+
+                </Box>
                 <Box sx={{
                     width: '100%',
                     height: '100px',
