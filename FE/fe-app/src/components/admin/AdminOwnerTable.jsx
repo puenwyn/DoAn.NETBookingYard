@@ -75,6 +75,7 @@ const UserTable = () => {
     const classes = useStyles();
     const [addForm, setAddForm] = React.useState(false);
     const [updateForm, setUpdateForm] = React.useState(false);
+    const [ownerSelected, setOwnerSelected] = React.useState(null);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -93,7 +94,9 @@ const UserTable = () => {
         setAddForm(false);
     }
 
-    const handleUpdateForm = () => {
+    const handleUpdateForm = async (id) => {
+        const owner = await getOwnerDetail(id);
+        setOwnerSelected(owner);
         setUpdateForm(true);
     }
 
@@ -101,18 +104,24 @@ const UserTable = () => {
         setUpdateForm(false);
     }
 
-    const { owners, loading, error, rowsPerPage, page, setPage, setRowsPerPage, totalOwners, addOwner, updateOwnerLocked } = React.useContext(OwnerContext);
+    const { owners, loading, error, rowsPerPage, page, setPage, setRowsPerPage, totalOwners, addOwner, updateOwnerLocked, getOwnerDetail, setKeySearch, keySearch } = React.useContext(OwnerContext);
     if (loading) {
-        return <CircularProgress />
+        return <>
+            <div className="loading-overlay">
+                <div className="loading-circle"></div>
+            </div></>
     }
     if (error) {
-        return <div>Error: {error}</div>
+        return <div>{error}</div>
     }
+
+    const lockedOwnersCount = owners.filter(owner => owner.isLocked === 1).length;
+    const activeOwnersCount = owners.filter(owner => owner.isLocked === 0).length;
 
     const ownerOverview = [
         { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu', total: totalOwners },
-        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu bị khóa', total: 10 },
-        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu đang hoạt động', total: 10 }
+        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu bị khóa', total: lockedOwnersCount },
+        { icon: <MdOutbond />, title: 'Tổng chủ sỡ hữu đang hoạt động', total: activeOwnersCount }
     ]
 
     const handleLock = (id, isLocked) => {
@@ -123,6 +132,11 @@ const UserTable = () => {
             showCancelButton: true,
             confirmButtonText: `Có, ${isLocked === 1 ? 'mở' : ''} khóa tài khoản`,
             cancelButtonText: 'Hủy',
+            didOpen: (popup) => {
+                popup.style.zIndex = '10001';
+                const backdrop = document.querySelector('.swal2-container');
+                if (backdrop) { backdrop.style.zIndex = '10001'; }
+            }
         }).then(async (result) => {
             if (result.isConfirmed) {
                 const lockResult = await updateOwnerLocked(id);
@@ -132,6 +146,11 @@ const UserTable = () => {
                         text: `Tài khoản đã được ${isLocked === 1 ? 'mở' : ''} khóa thành công.`,
                         icon: 'success',
                         confirmButtonText: 'OK',
+                        didOpen: (popup) => {
+                            popup.style.zIndex = '10001';
+                            const backdrop = document.querySelector('.swal2-container');
+                            if (backdrop) { backdrop.style.zIndex = '10001'; }
+                        }
                     });
                 } else {
                     Swal.fire({
@@ -139,6 +158,11 @@ const UserTable = () => {
                         text: lockResult.message,
                         icon: 'error',
                         confirmButtonText: 'OK',
+                        didOpen: (popup) => {
+                            popup.style.zIndex = '10001';
+                            const backdrop = document.querySelector('.swal2-container');
+                            if (backdrop) { backdrop.style.zIndex = '10001'; }
+                        }
                     });
                 }
             }
@@ -147,11 +171,10 @@ const UserTable = () => {
 
     return (
         <>
-
             {addForm ? (
                 <AdminOwner setAddForm={setAddForm} addOwner={addOwner} onClose={handleBackAddForm} />
             ) : updateForm ? (
-                <AdminOwnerUpdate onClose={handleBackUpdateForm} />
+                <AdminOwnerUpdate onClose={handleBackUpdateForm} owner={ownerSelected} />
             ) : (
                 <Box sx={{
                     width: '100%',
@@ -249,9 +272,11 @@ const UserTable = () => {
                                 justifyContent: 'space-between'
                             }}>
                                 <TextField
+                                    onChange={(e) => { setKeySearch(e.target.value) }}
                                     autoComplete="off"
                                     placeholder="Tìm kiếm"
                                     variant="outlined"
+                                    value={keySearch}
                                     InputProps={{
                                         sx: {
                                             padding: 0,
@@ -342,7 +367,7 @@ const UserTable = () => {
                                                     <IconButton aria-label="delete" sx={{
                                                         color: 'rgb(33, 82, 255)'
                                                     }}
-                                                        onClick={handleUpdateForm}>
+                                                        onClick={() => handleUpdateForm(owner.id)}>
                                                         <RiInformationFill />
                                                     </IconButton>
                                                     <IconButton
@@ -359,20 +384,22 @@ const UserTable = () => {
                                     </TableBody>
                                     <TableFooter>
                                         <TableRow>
-                                            <TablePagination className='custom-page'
-                                                rowsPerPageOptions={[5, 10, 15, 20]}
-                                                component="div"
-                                                count={totalOwners}
-                                                rowsPerPage={rowsPerPage}
-                                                page={page}
-                                                onPageChange={handleChangePage}
-                                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                                sx={{
-                                                    display: 'flex',
-                                                    alignContent: 'center',
-                                                    margin: '0'
-                                                }}
-                                            />
+                                            <TableCell colSpan={7}>
+                                                <TablePagination className='custom-page w-100'
+                                                    rowsPerPageOptions={[5, 10, 15, 20]}
+                                                    component="div"
+                                                    count={totalOwners}
+                                                    rowsPerPage={rowsPerPage}
+                                                    page={page}
+                                                    onPageChange={handleChangePage}
+                                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignContent: 'center',
+                                                        margin: '0'
+                                                    }}
+                                                />
+                                            </TableCell>
                                         </TableRow>
                                     </TableFooter>
                                 </Table>

@@ -10,7 +10,7 @@ export const AmenityProvider = ({ children }) => {
     useEffect(() => {
         const fetchAmenity = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/v1/amenities');
+                const res = await fetch('https://localhost:7071/api/v1/Amenity');
                 const data = await res.json();
                 setAmenities(data);
             } catch (err) {

@@ -63,11 +63,11 @@ const ProgressStats = ({ title, value, color }) => {
 const AdminYardOverview = () => {
 
     const dataset = [
-        { label: 'Sân 1', stat: 10 },
-        { label: 'Sân 2', stat: 7 },
-        { label: 'Sân 3', stat: 5 },
-        { label: 'Sân 4', stat: 2 },
-        { label: 'Sân 5', stat: 8 },
+        { label: '1', stat: 10 },
+        { label: '2', stat: 9 },
+        { label: '3', stat: 6 },
+        { label: '4', stat: 5 },
+        { label: '5', stat: 2 },
     ]
 
     const dataset2 = [
@@ -78,7 +78,7 @@ const AdminYardOverview = () => {
         { label: 'Orange', stat: 7 },
         { label: 'Purple', stat: 11 },
     ]
-    
+
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -123,10 +123,10 @@ const AdminYardOverview = () => {
                                 WebkitBackgroundClip: 'text', // Clip nền cho chữ
                                 WebkitTextFillColor: 'transparent', // Làm màu chữ trong suốt
                                 display: 'inline-block', // Đảm bảo gradient áp dụng đúng cho chữ
-                            }}>100</Typography>
+                            }}>3</Typography>
                         </Box>
-                        <ProgressStats title={"Số sân hoạt động"} value={80} color={'linear-gradient(310deg, rgb(33, 82, 255), rgb(33, 212, 253))'} />
-                        <ProgressStats title={"Số sân bị khóa"} value={20} color={'linear-gradient(310deg, rgba(255, 0, 0, 1), rgba(255, 100, 100, 1))'} />
+                        <ProgressStats title={"Số sân hoạt động"} value={100} color={'linear-gradient(310deg, rgb(33, 82, 255), rgb(33, 212, 253))'} />
+                        <ProgressStats title={"Số sân bị khóa"} value={0} color={'linear-gradient(310deg, rgba(255, 0, 0, 1), rgba(255, 100, 100, 1))'} />
                     </Grid2>
                     <Grid2 item size={6} sx={{
                         background: 'white',
@@ -176,7 +176,7 @@ const AdminYardManager = () => {
     const [name, setName] = useState(null);
     const classes = useStyles();
 
-    const { yards, totalPage, page, setPage, rowsPerPage, setRowsPerPage, totalYard, setRefresh } = useYardAdmin();
+    const { yards, totalPage, page, setPage, rowsPerPage, setRowsPerPage, totalYard, setRefresh, keySearch, setKeySearch } = useYardAdmin();
 
     const handleToggle = (event, rowId) => {
         setAnchorEl(event.currentTarget);
@@ -301,20 +301,24 @@ const AdminYardManager = () => {
         setIsOpenYardType(false);
     };
 
-    const handleIconClick = (yard) => {
+    const handleIconClick = async (yard) => {
+        const yardSelected = await fetchYardAdminView(yard);
+        setSelectedYard(yardSelected);
         setIsUpdateForm(true);
-        alert(yard);
-        setSelectedYard(yard); // Lưu thông tin sân được nhấn
     };
 
 
     const { yardTypes, loading, error, addYardType, updateYardType } = useContext(YardTypeContext);
+    const {fetchYardAdminView } = useYardAdmin();
     if (loading) {
-        return <CircularProgress />
+        return <>
+            <div className="loading-overlay">
+                <div className="loading-circle"></div>
+            </div></>
     }
-    // if (error) {
-    //     return <div>Error: {error}</div>
-    // }
+    if (error) {
+        return <div>{error}</div>
+    }
 
     return (
         <>
@@ -329,7 +333,7 @@ const AdminYardManager = () => {
                             </AmenityProvider>
                         </OwnerProvider>
                     </YardTypeProvider>
-                ) : isUpdateForm ? (<AdminYardView close={handleSetBackUpdateForm} />) : (
+                ) : isUpdateForm ? (<AdminYardView close={handleSetBackUpdateForm} yardOke={selectedYard}/>) : (
                     <Box sx={{
                         width: '100%', padding: 3
                     }}>
@@ -430,8 +434,10 @@ const AdminYardManager = () => {
                                 </Typography>
                                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                                     <TextField
+                                        onChange={(e) => { setKeySearch(e.target.value) }}
                                         autoComplete="off"
                                         placeholder="Tìm kiếm"
+                                        value={keySearch}
                                         variant="outlined"
                                         InputProps={{
                                             sx: {

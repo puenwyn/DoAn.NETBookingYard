@@ -125,8 +125,8 @@ const AdminPayment = ({ onClose }) => {
                                 ))}
                             </Grid2>
                         </Box>
-                        <Typography sx={{ color: '#6D7C89', fontWeight: 400, textTransform: 'uppercase', marginTop: 3, marginBottom: 3 }}>Danh sách đặt sân</Typography>
-                        <TableContainer component={Paper}>
+                        {/* <Typography sx={{ color: '#6D7C89', fontWeight: 400, textTransform: 'uppercase', marginTop: 3, marginBottom: 3 }}>Danh sách đặt sân</Typography> */}
+                        {/* <TableContainer component={Paper}>
                             <Table>
                                 <TableHead>
                                     <TableRow>
@@ -148,10 +148,10 @@ const AdminPayment = ({ onClose }) => {
                                                         {expandedRow === index ? "Hide Details" : "Show Details"}
                                                     </Button>
                                                 </TableCell>
-                                            </TableRow>
+                                            </TableRow> */}
 
                                             {/* Collapse component for smooth expand/collapse */}
-                                            <TableRow>
+                                            {/* <TableRow>
                                                 <TableCell colSpan={4} style={{ padding: 0 }}>
                                                     <Collapse in={expandedRow === index} timeout="auto" unmountOnExit>
                                                         <Box sx={{ padding: "10px", backgroundColor: "#f5f5f5" }}>
@@ -164,7 +164,7 @@ const AdminPayment = ({ onClose }) => {
                                     ))}
                                 </TableBody>
                             </Table>
-                        </TableContainer>
+                        </TableContainer> */}
                     </Grid2>
                     <Grid2 item size={5} sx={{ padding: 3 }}>
                         <Typography variant="h6" sx={{ color: '#6D7C89', fontWeight: 500 }}>Thanh toán</Typography>

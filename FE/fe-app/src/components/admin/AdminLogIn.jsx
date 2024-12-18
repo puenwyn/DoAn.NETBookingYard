@@ -62,18 +62,13 @@ const AdminLogIn = () => {
                         justifyContent: 'space-between',
                         alignItems: 'center'
                     }}>
-                        <Typography variant="h5" sx={{ fontWeight: '600' }}>
+                        <Typography textAlign={"center"} variant="h5" sx={{ fontWeight: '600', width: '100%' }}>
                             {isLogin ? 'Đăng nhập' : 'Đăng ký'}
                         </Typography>
-                        <Link style={{ textDecoration: "none" }} component="span" href="#" underline="none" sx={{ color: 'white' }} onClick={handleLogin}>
-                            <Typography component="span" sx={{ color: 'rgb(254, 128, 50)', fontSize: '14px', textDecoration: 'none !important' }}>
-                                {isLogin ? 'Bạn chưa có tài khoản?' : 'Bạn đã có tài khoản?'}
-                            </Typography>
-                        </Link>
                     </Box>
                     {isLogin === true && (
                         <Box>
-                            <CustomTextField label={'Địa chỉ Email'} placeholder={'Nhập địa chỉ Email'} password={false} regex={/^[a-zA-Z]{3,}$/} error={'Vui lòng nhập'} width={'100%'} />
+                            <CustomTextField label={'Tài khoản'} placeholder={'Nhập tài khoản'} password={false} regex={/^[a-zA-Z]{3,}$/} error={'Vui lòng nhập'} width={'100%'} />
                             <CustomTextField label={'Mật khẩu'} placeholder={'******'} password={true} regex={/^[0-9]{6,}$/} error={'Vui lòng nhập'} width={'100%'} />
                             <Box sx={{
                                 marginTop: 3,
@@ -82,12 +77,6 @@ const AdminLogIn = () => {
                                 justifyContent: 'space-between',
                                 alignItems: 'center'
                             }}>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox size="small" color="rgb(254, 128, 50)" defaultChecked />
-                                    }
-                                    label={<Typography sx={{ fontSize: '14px' }}>Nhớ mật khẩu</Typography>}
-                                />
                                 <Typography sx={{ fontSize: '14px' }}>Quên mật khẩu?</Typography>
                             </Box>
                             <Button

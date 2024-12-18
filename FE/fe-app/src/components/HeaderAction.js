@@ -52,7 +52,7 @@ const HeaderAction = () => {
                             if (backdrop) { backdrop.style.zIndex = '10001'; }
                         }
                     }).then(() => {
-                        navigate("/");
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire({

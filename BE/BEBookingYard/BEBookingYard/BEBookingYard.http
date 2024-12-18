@@ -1,6 +1,0 @@
-@BEBookingYard_HostAddress = http://localhost:5029
-
-GET {{BEBookingYard_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

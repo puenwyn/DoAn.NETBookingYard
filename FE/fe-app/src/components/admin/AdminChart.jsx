@@ -139,6 +139,14 @@ const AdminChart = () => {
         { id: 4, primary: 'Sân 4', secondary: 'Thông tin thêm 4', progress: 95, color: '#16B1FF' },
     ];
 
+    const dataset = [
+        { label: 'Red', stat: 31 },
+        { label: 'Blue', stat: 28 },
+        { label: 'Yellow', stat: 6 },
+        { label: 'Green', stat: 9 },
+        { label: 'Orange', stat: 7 },
+    ]
+
     const [value, setValue] = React.useState('1');
 
     const handleChange = (event, newValue) => {
@@ -288,7 +296,7 @@ const AdminChart = () => {
                             marginTop: 3,
                             position: 'relative'
                         }}>
-                            <DoughnutChart2 />
+                            <DoughnutChart2 dataset={dataset} full={true} />
                         </Box>
                         <Box sx={{
                             width: '100%',

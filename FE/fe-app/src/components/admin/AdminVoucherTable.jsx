@@ -1,16 +1,19 @@
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, IconButton, InputAdornment, Radio, RadioGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
-import React, { act, useEffect, useState } from "react"; // Nhập useState
+import React, { act, useContext, useEffect, useState } from "react"; // Nhập useState
 import { IoIosSearch } from "react-icons/io";
 import { RiInformationFill } from "react-icons/ri";
 import { VoucherContext } from "../../context/VoucherContext";
 import { formatDate } from "../../utils/FormatDate";
 import CustomTextField from "../CustomTextField";
 import { CustomComboBox } from "./AdminYardDetail";
+import Swal from "sweetalert2";
+import { formatNumber } from "../../utils/FormatNumber";
 
 const AddVoucherForm = ({ open, handleClose, action }) => {
 
     const [validStartDate, setValidStartDate] = useState('');
     const [validEndDate, setValidEndDate] = useState('');
+    const { addVoucher } = useContext(VoucherContext);
 
     const [formIsErrorData, setFormIsErrorData] = useState({
         name: null,
@@ -43,37 +46,7 @@ const AddVoucherForm = ({ open, handleClose, action }) => {
         }
     };
 
-    useEffect(() => {
-        const today = new Date();
-        const startDate = new Date(formData.startDate);
-        const endDate = new Date(formData.endDate);
-
-        // Kiểm tra ngày bắt đầu
-        if (!formData.startDate) {
-            setValidStartDate('Vui lòng chọn ngày bắt đầu');
-            setFormIsErrorData((prevData) => ({ ...prevData, startDate: false }));
-        } else if (startDate <= today) {
-            setValidStartDate('Vui lòng chọn ngày bắt đầu lớn hơn ngày hiện tại');
-            setFormIsErrorData((prevData) => ({ ...prevData, startDate: false }));
-        } else {
-            setValidStartDate('');
-            setFormIsErrorData((prevData) => ({ ...prevData, startDate: true }));
-        }
-
-        // Kiểm tra ngày kết thúc
-        if (!formData.endDate) {
-            setValidEndDate('Vui lòng chọn ngày kết thúc');
-            setFormIsErrorData((prevData) => ({ ...prevData, endDate: false }));
-        } else if (endDate <= startDate) {
-            setValidEndDate('Vui lòng chọn ngày kết thúc lớn hơn ngày bắt đầu');
-            setFormIsErrorData((prevData) => ({ ...prevData, endDate: false }));
-        } else {
-            setValidEndDate('');
-            setFormIsErrorData((prevData) => ({ ...prevData, endDate: true }));
-        }
-    }, [formData.startDate, formData.endDate]);
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let isValidForm = true;
 
         if (!formData.name) {
@@ -98,8 +71,11 @@ const AddVoucherForm = ({ open, handleClose, action }) => {
         }
 
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const startDate = new Date(formData.startDate);
+        startDate.setHours(0, 0, 0, 0);
         const endDate = new Date(formData.endDate);
+        endDate.setHours(0, 0, 0, 0);
 
         // Kiểm tra ngày bắt đầu
         if (!formData.startDate) {
@@ -126,11 +102,54 @@ const AddVoucherForm = ({ open, handleClose, action }) => {
         } else {
             setFormIsErrorData((prevData) => ({ ...prevData, endDate: true }));
         }
-
-        alert(isValidForm); // Kiểm tra tính hợp lệ của form
         if (isValidForm) {
-            alert(JSON.stringify())
-            resetForm(); // Gọi hàm reset form
+            const result = await Swal.fire({
+                title: 'Xác nhận',
+                text: "Bạn có chắc chắn muốn thêm mã giảm giá này?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không',
+                didOpen: (popup) => {
+                    popup.style.zIndex = '10001';
+                    const backdrop = document.querySelector('.swal2-container');
+                    if (backdrop) { backdrop.style.zIndex = '10000'; }
+                }
+            });
+
+            if (result.isConfirmed) {
+                const addResult = await addVoucher(formData);
+                if (addResult.status === 'success') {
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Đã thêm mã giảm giá thành công.',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        didOpen: (popup) => {
+                            popup.style.zIndex = '10001';
+                            const backdrop = document.querySelector('.swal2-container');
+                            if (backdrop) { backdrop.style.zIndex = '10000'; }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            handleClose(false);
+                            resetForm();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Thất bại!',
+                        text: addResult.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        didOpen: (popup) => {
+                            popup.style.zIndex = '10001';
+                            const backdrop = document.querySelector('.swal2-container');
+                            if (backdrop) { backdrop.style.zIndex = '10000'; }
+                        }
+                    })
+                }
+            }
         }
     }
 
@@ -286,9 +305,13 @@ const AddVoucherForm = ({ open, handleClose, action }) => {
 };
 
 const AdminVoucherTable = () => {
-    const { vouchers, loading, error } = React.useContext(VoucherContext);
+    const { loading, error, keySearch, setKeySearch } = React.useContext(VoucherContext);
     const [action, setAction] = useState(null);
     const [openAddVoucherForm, setOpenAddVoucherForm] = useState(false);
+
+    const vouchers = [
+        {id: 1, name: 'Khuyến mãi đặc biệt', type: '%', discount: '10', startDate: '2024-11-20', endDate: '2024-11-31'}
+    ]
 
     const handleOpenAddVoucher = (action) => {
         setOpenAddVoucherForm(true);
@@ -300,7 +323,10 @@ const AdminVoucherTable = () => {
     }
 
     if (loading) {
-        return <CircularProgress />;
+        return <>
+            <div className="loading-overlay">
+                <div className="loading-circle"></div>
+            </div></>;
     }
     if (error) {
         return <div>Error: {error}</div>;
@@ -319,6 +345,8 @@ const AdminVoucherTable = () => {
                     justifyContent: 'space-between'
                 }}>
                     <TextField
+                        value={keySearch}
+                        onChange={(e) => setKeySearch(e.target.value)}
                         autoComplete="off"
                         placeholder="Tìm kiếm"
                         variant="outlined"
@@ -345,7 +373,7 @@ const AdminVoucherTable = () => {
                         sx={{ boxShadow: 'none' }}
                         onClick={() => handleOpenAddVoucher(true)} // Open the AddVoucherForm
                     >
-                        Thêm
+                        Thêm mới mã giảm giá
                     </Button>
                 </Box>
                 <TableContainer>
@@ -366,8 +394,23 @@ const AdminVoucherTable = () => {
                                 <TableRow key={voucher.id}>
                                     <TableCell>{voucher.id}</TableCell>
                                     <TableCell>{voucher.name}</TableCell>
-                                    <TableCell align="center">{voucher.type}</TableCell>
-                                    <TableCell align="center">{voucher.discount}</TableCell>
+                                    <TableCell align="center">
+                                        <Typography sx={{
+                                            backgroundColor: voucher.type === 'percent' ? '#E4F6D6' : '#FFE2E3',
+                                            color: voucher.type === 'percent' ? '#56CA00' : '#FF4C51',
+                                            padding: '3px 10px',
+                                            borderRadius: '15px',
+                                            fontWeight: 'bold',
+                                            fontSize: '12px'
+                                        }}
+                                        >{voucher.type === 'percent' ? 'PHẦN TRĂM' : 'TIỀN MẶT'}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        {
+                                            voucher.type === 'percent' ? voucher.discount + "%" : formatNumber(voucher.discount) + " VNĐ"
+                                        }
+                                    </TableCell>
                                     <TableCell align="center">{formatDate(voucher.startDate)}</TableCell>
                                     <TableCell align="center">{formatDate(voucher.endDate)}</TableCell>
                                     <TableCell align="center">

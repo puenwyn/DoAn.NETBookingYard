@@ -48,7 +48,9 @@ const ForgotPassword = () => {
 
     const handleChangePassword = async (e) => {
         e.preventDefault();
+        let isValid = true;
         if (!regex.test(password)) {
+            isValid = false;
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Mật khẩu chỉ được phép chứa chữ cái và số, không có dấu cách hoặc ký tự đặc biệt.',
@@ -57,6 +59,7 @@ const ForgotPassword = () => {
             });
         }
         if (password.length < 6) {
+            isValid = false;
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Mật khẩu phải có ít nhất 6 ký tự.',
@@ -66,6 +69,7 @@ const ForgotPassword = () => {
         }
 
         if (confirmPassword !== password) {
+            isValid = false;
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Mật khẩu xác nhận chưa khớp.',
@@ -73,21 +77,29 @@ const ForgotPassword = () => {
                 confirmButtonText: 'OK',
             });
         }
-
-        // Xử lý khi đổi mk thành công
-        try {
-            const token = getQueryParams();
-            const result = await resetPassword(token, password);
-            if (result) {
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: 'Mật khẩu của bạn đã được thay đổi.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                }).then(() => {
-                    navigate("/auth#login");
-                });
-            } else {
+        if (isValid) {
+            try {
+                const token = getQueryParams();
+                const result = await resetPassword(token, password);
+                if (result) {
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Mật khẩu của bạn đã được thay đổi.',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                    }).then(() => {
+                        navigate("/auth#login");
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Đã có lỗi xảy ra. Vui lòng thử lại sau.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                    });
+                }
+            }
+            catch (err) {
                 Swal.fire({
                     title: 'Lỗi!',
                     text: 'Đã có lỗi xảy ra. Vui lòng thử lại sau.',
@@ -95,14 +107,6 @@ const ForgotPassword = () => {
                     confirmButtonText: 'OK',
                 });
             }
-        }
-        catch (err) {
-            Swal.fire({
-                title: 'Lỗi!',
-                text: 'Đã có lỗi xảy ra. Vui lòng thử lại sau.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
         }
     }
 

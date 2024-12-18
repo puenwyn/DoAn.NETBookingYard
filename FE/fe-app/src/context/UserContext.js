@@ -15,47 +15,57 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
-
-    // useEffect(() => {
-    //     const fetchUsers = async () => {
-    //         try {
-    //             const response = await axios.get('https://localhost:7094/Employees');
-    //             setUsers(response.data);
-    //         } catch (err) {
-    //             setError(err.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
-    //     fetchUsers();
-    // }, []);
-    // return (
-    //     <UserContext.Provider value={{ users, loading, error }}>
-    //         {children}
-    //     </UserContext.Provider>
-    // )
+    const [keySearch, setKeySearch] = useState('');
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/api/v1/users?page=${page}&size=${rowsPerPage}`);
-                const data = await response.json();
-                setUsers(data.users);
-                setTotalPage(data.totalPages);
-                setTotalUsers(data.totalUsers);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
+        if (keySearch === '') {
+            fetchUsers();
+        } else {
+            fetchUsersBySearch();
         }
-        fetchUsers();
     }, [page, rowsPerPage])
+
+    useEffect(() => {
+        setPage(0);
+        if (keySearch === '') {
+            fetchUsers();
+        } else {
+            fetchUsersBySearch();
+        }
+    }, [keySearch])
+
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/user/admin?pageIndex=${page + 1}&pageSize=${rowsPerPage}`);
+            const data = await response.json();
+            setUsers(data.results);
+            setTotalPage(data.totalPages);
+            setTotalUsers(data.totalRecords);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchUsersBySearch = async () => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/user/admin/search?key=${keySearch}&pageIndex=${page + 1}&pageSize=${rowsPerPage}`);
+            const data = await response.json();
+            setUsers(data.results);
+            setTotalPage(data.totalPages);
+            setTotalUsers(data.totalRecords);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const getUserDetail = async (id) => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:8080/api/v1/users/${id}`);
+            const response = await axios.get(`http://localhost:7071/api/v1/users/${id}`);
             setSelectedUser(response.data);
         } catch (err) {
             setError(err.message);
@@ -66,15 +76,15 @@ export const UserProvider = ({ children }) => {
 
     const createNewUser = async (newUserData) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/users`, {
+            const response = await fetch(`https://localhost:7071/api/v1/user`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', 
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(newUserData),
             });
             if (!response.ok) {
-                const errorData = await response.json(); 
+                const errorData = await response.json();
                 return { status: 'error', message: errorData.message || 'Something went wrong' };
             }
 
@@ -84,7 +94,7 @@ export const UserProvider = ({ children }) => {
                 user: createdUser,
             };
         } catch (err) {
-console.error('Error creating user:', err);
+            console.error('Error creating user:', err);
 
             return {
                 status: 'error',
@@ -95,7 +105,7 @@ console.error('Error creating user:', err);
 
 
     return (
-        <UserContext.Provider value={{ users, totalPage, page, setPage, rowsPerPage, setRowsPerPage, loading, error, totalUsers, getUserDetail, createNewUser }} >
+        <UserContext.Provider value={{ users, totalPage, page, setPage, rowsPerPage, setRowsPerPage, loading, error, totalUsers, getUserDetail, createNewUser, keySearch, setKeySearch }} >
             {children}
         </UserContext.Provider>
     )

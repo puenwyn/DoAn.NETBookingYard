@@ -5,6 +5,7 @@ import '../styles/components/header.css';
 import HeaderAction from './HeaderAction';
 import Navigation from './Navigation';
 import { YardTypeProvider } from '../context/YardTypeContext';
+import { YardProvider } from '../context/YardContext';
 
 const Header = () => {
     return (
@@ -31,9 +32,11 @@ const Header = () => {
                     </div>
                 </div>
             </div>
-            <YardTypeProvider>
-                <Navigation />
-            </YardTypeProvider>
+            <YardProvider>
+                <YardTypeProvider>
+                    <Navigation />
+                </YardTypeProvider>
+            </YardProvider>
         </header>
     );
 };

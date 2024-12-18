@@ -82,7 +82,7 @@ const UserInfoPage = () => {
             await Swal.fire({
                 title: 'Lỗi',
                 text: 'Bạn phải chọn giới tính!',
-icon: 'error',
+                icon: 'error',
                 confirmButtonText: 'OK',
             });
             return;
@@ -164,16 +164,14 @@ icon: 'error',
                 dateOfBirth: birthDate,
                 gender: gender === 'male' ? 0 : 1,
                 address: '',
-                role: 0,
             }
-            console.log(userData);
             const result_create = await createNewUser(userData);
             if (result_create.status === 'error') {
                 Swal.fire({
                     title: "Thông báo",
                     text: "Đăng ký tài khoản mới không thành công!",
                     icon: "error",
-confirmButtonText: "OK",
+                    confirmButtonText: "OK",
                 })
             } else {
                 Swal.fire({
@@ -244,7 +242,7 @@ confirmButtonText: "OK",
                             <div className="gender-options d-flex">
                                 <div className="gender-option d-flex align-items-center ps-3">
                                     <input
-type="radio"
+                                        type="radio"
                                         value="male"
                                         name="gender"
                                         id="male"
@@ -301,7 +299,7 @@ type="radio"
                     </div>
                 )}
                 {showOtp && (
-<div className={`form-box bg-white py-4 px-5 d-flex flex-column justify-content-center`}>
+                    <div className={`form-box bg-white py-4 px-5 d-flex flex-column justify-content-center`}>
                         <form className="form-custom" onSubmit={handleOtpSubmit}>
                             <h2 className="text-center">Nhập mã OTP</h2>
                             <div className="input-box d-flex flex-column justify-content-center align-items-center">

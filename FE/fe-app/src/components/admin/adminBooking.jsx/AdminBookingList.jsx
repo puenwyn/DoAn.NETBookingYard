@@ -4,6 +4,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import BookIcon from '@mui/icons-material/Book';
 import { formatNumber } from '../../../utils/FormatNumber';
 import '../../../styles/components/adminBooking.css';
+import { useBookingContext } from '../../../context/BookingContext';
+import { DateTime } from 'luxon';
 
 const imageList = [
     `${process.env.PUBLIC_URL}/assets/waterfall.jpg`,
@@ -113,10 +115,99 @@ const MediaCard = ({ yards, handleOpenPayment }) => {
 };
 
 const AdminBookingList = ({ dayOfWeek, day, timeSlot, handleOpenPayment, onClose }) => {
+    const { getAllBookingsYardDetail } = useBookingContext();
+    const [yards, setYards] = useState([]);
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                // Log giá trị day và timeSlot để kiểm tra
+                console.log("Day:", day);
+                console.log("TimeSlot:", timeSlot);
+    
+                // Kiểm tra nếu timeSlot có dấu '-' và chia ra giờ bắt đầu và giờ kết thúc
+                if (!timeSlot.includes('-')) {
+                    console.error("Invalid timeSlot format");
+                    return;
+                }
+    
+                const [startTime, endTime] = timeSlot.split('-');
+    
+                // Log startTime và endTime để kiểm tra
+                console.log("Start Time:", startTime);
+                console.log("End Time:", endTime);
+    
+                // Chuyển ngày thành định dạng chuẩn ISO (YYYY-MM-DD)
+                const dateParts = day.split('/'); // Giả sử day có định dạng DD/MM/YYYY
+                const formattedDay = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Chuyển sang YYYY-MM-DD
+    
+                // Kết hợp ngày và giờ
+                const formattedStartTimeString = `${formattedDay} ${startTime}:00`; // Định dạng ngày giờ theo yêu cầu
+    
+                // Dùng Luxon để chuyển đổi sang thời gian với múi giờ địa phương
+                const formattedStartTime = DateTime.fromFormat(formattedStartTimeString, "yyyy-MM-dd HH:mm:ss", { zone: 'local' });
+    
+                // Kiểm tra xem thời gian đã hợp lệ chưa
+                if (!formattedStartTime.isValid) {
+                    console.error("Invalid Date:", formattedStartTimeString);
+                    return; // Ngừng nếu ngày không hợp lệ
+                }
+    
+                // Log kết quả để kiểm tra
+                console.log("Formatted Start Time:", formattedStartTime.toFormat("yyyy-MM-dd HH:mm:ss"));
+    
+                // Gọi API với định dạng ngày giờ chuẩn
+                const data = await getAllBookingsYardDetail(formattedStartTime.toFormat("yyyy-MM-dd HH:mm:ss"));
+    
+                // Kiểm tra dữ liệu trả về từ API
+                console.log("API Data:", data);
+    
+                if (data) {
+                    const formattedYards = formatYardData(data);
+                    setYards(formattedYards);
+                } else {
+                    console.error("No data returned from API");
+                }
+            } catch (err) {
+                console.error('Error fetching bookings:', err);
+            } finally {
+                // Có thể thêm xử lý trạng thái loading nếu cần
+            }
+        };
+    
+        // Gọi hàm fetchBookings
+        console.log("useEffect triggered with day:", day, "and timeSlot:", timeSlot);
+        fetchBookings();
+    }, []);
+
     const [stickyStyle, setStickyStyle] = useState({
         background: 'transparent',
         boxShadow: 'none',
     });
+
+    const formatYardData = (responseData) => {
+        const formattedYards = [];
+
+        Object.entries(responseData).forEach(([yardId, bookings]) => {
+            const yard = {
+                id: parseInt(yardId),
+                name: bookings[0]?.name || 'Unknown Yard',
+                list: []
+            };
+
+            bookings.forEach(booking => {
+                yard.list.push({
+                    yardId: yard.id,
+                    detail: booking.name, // Tên sân
+                    peak: booking.pricePeak, // Giá Peak
+                    status: booking.booking.status === 'Đã được đặt' ? 'BOOKING' : 'PENDING' // Trạng thái Booking
+                });
+            });
+
+            formattedYards.push(yard);
+        });
+
+        return formattedYards;
+    };
 
     const containerRef = useRef(null);
 
@@ -156,24 +247,24 @@ const AdminBookingList = ({ dayOfWeek, day, timeSlot, handleOpenPayment, onClose
         };
     }, [handleScroll]);
 
-    const yards = [
-        {
-            id: 1, name: 'Sân cầu lông cực cháy', list: [
-                { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
-                { yardId: 2, detail: 'Sân A', peak: 100000, status: 'PENDING' },
-                { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
-                { yardId: 2, detail: 'Sân A', peak: 100000, status: 'PENDING' },
-                { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
-                { yardId: 2, detail: 'Sân ABCDEFGHIKLMNO', peak: 100000, status: 'PENDING' }
-            ]
-        },
-        {
-            id: 2, name: 'Sân bóng chuyền quá đỉnh', list: [
-                { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
-                { yardId: 2, detail: 'Sân A', peak: 100000, status: 'PENDING' }
-            ]
-        }
-    ];
+    // const yards = [
+    //     {
+    //         id: 1, name: 'Sân cầu lông cực cháy', list: [
+    //             { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
+    //             { yardId: 2, detail: 'Sân A', peak: 100000, status: 'PENDING' },
+    //             { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
+    //             { yardId: 2, detail: 'Sân A', peak: 100000, status: 'PENDING' },
+    //             { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
+    //             { yardId: 2, detail: 'Sân ABCDEFGHIKLMNO', peak: 100000, status: 'PENDING' }
+    //         ]
+    //     },
+    //     {
+    //         id: 2, name: 'Sân bóng chuyền quá đỉnh', list: [
+    //             { yardId: 1, detail: 'Sân A', peak: 120000, status: 'BOOKING' },
+    //             { yardId: 2, detail: 'Sân A', peak: 100000, status: 'PENDING' }
+    //         ]
+    //     }
+    // ];
 
     return (
         <Box sx={{ width: '100%', padding: 3, height: 'calc(100vh - 60px)', overflowY: 'scroll' }} ref={containerRef}>

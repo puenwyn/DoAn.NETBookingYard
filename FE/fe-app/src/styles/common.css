@@ -393,6 +393,23 @@ height: 10px;
     #printArea, #printArea * {
         display: block; /* Chỉ hiển thị phần tử với id là printArea */
     }
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+    #printArea {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        page-break-before: avoid;  /* Ngăn ngắt trang trước phần tử này */
+        page-break-after: avoid;   /* Ngăn ngắt trang sau phần tử này */
+        page-break-inside: avoid; 
+    }
+    /* Loại bỏ bất kỳ khoảng cách mặc định hoặc padding nào */
+    @page {
+        margin: 0;
+    }
 }
 
 thead {
@@ -458,3 +475,125 @@ input[type="date"] {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+@media print {
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .receipt-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        box-sizing: border-box;
+        color: #333;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .header h1 {
+        font-size: 36px;
+        color: #1a73e8;
+        margin: 0;
+    }
+
+    .header .intro {
+        font-size: 16px;
+        color: #555;
+        margin-top: 10px;
+    }
+
+    .main-content {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+    .info-section {
+        width: 48%;
+    }
+
+    .info-box {
+        margin-bottom: 20px;
+    }
+
+    .info-box h3 {
+        font-size: 20px;
+        color: #1a73e8;
+    }
+
+    .info-box p {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+
+    .info-box strong {
+        color: #333;
+    }
+
+    .payment-info {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .payment-info h3 {
+        font-size: 20px;
+        color: #1a73e8;
+        margin-bottom: 10px;
+    }
+
+    .payment-info p {
+        font-size: 16px;
+    }
+
+    .qr-code {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .qr-code img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .footer-message {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 10px;
+    }
+
+    .footer-hotline, .footer-website {
+        font-size: 16px;
+        color: #333;
+    }
+
+    .footer-hotline {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .footer-website {
+        font-style: italic;
+        margin-bottom: 20px;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+}
+
