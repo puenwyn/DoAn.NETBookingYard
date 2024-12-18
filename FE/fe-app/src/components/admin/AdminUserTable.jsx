@@ -160,11 +160,14 @@ const UserTable = () => {
         { label: 'Bị khóa', stat: 5 }
     ]
 
-    const { users, loading, error, rowsPerPage, page, setPage, setRowsPerPage, totalUsers, getUserDetail } = React.useContext(UserContext);
+    const { users, loading, error, rowsPerPage, page, setPage, setRowsPerPage, totalUsers, getUserDetail, keySearch, setKeySearch } = React.useContext(UserContext);
 
     // Loading và error sẽ trả về component hiển thị riêng biệt, nếu có
     if (loading) {
-        return <CircularProgress />;
+        return <>
+            <div className="loading-overlay">
+                <div className="loading-circle"></div>
+            </div></>
     }
     if (error) {
         return <div>Error: {error}</div>;
@@ -195,12 +198,12 @@ const UserTable = () => {
                         <Typography variant='h6' sx={{
                             fontWeight: 400,
                             color: 'black'
-                        }}>Danh sách thông tin chủ sân</Typography>
+                        }}>Danh sách thông tin người dùng</Typography>
                         <Typography sx={{
                             fontWeight: 300,
                             color: 'black',
                             fontSize: '15px'
-                        }}>Danh sách chủ sỡ hữu sân thể thao giúp bạn dễ dàng liên lạc</Typography>
+                        }}>Danh sách người dùng giúp bạn dễ dàng liên lạc</Typography>
                         <Box sx={{
                             background: `url(${process.env.PUBLIC_URL}/assets/moderizelogo.jpg)`,
                             width: '180px',
@@ -309,9 +312,11 @@ const UserTable = () => {
                             justifyContent: 'left'
                         }}>
                             <TextField
+                                onChange={(e) => { setKeySearch(e.target.value) }}
                                 autoComplete="off"
                                 placeholder="Tìm kiếm"
                                 variant="outlined"
+                                value={keySearch}
                                 InputProps={{
                                     sx: {
                                         padding: 0,
@@ -336,9 +341,9 @@ const UserTable = () => {
                             <Table stickyHeader className='owner-table' aria-label="simple table">
                                 <TableHead>
                                     <TableRow className={classes.tablerowcus}>
-                                        <TableCell>Họ tên</TableCell>
+                                        <TableCell width={'300px'}>Họ tên</TableCell>
                                         <TableCell>Ngày sinh</TableCell>
-                                        <TableCell>Địa chỉ</TableCell>
+                                        <TableCell width={'600px'}>Địa chỉ</TableCell>
                                         <TableCell align='center'>Số điện thoại</TableCell>
                                         <TableCell align='center'>Giới tính</TableCell>
                                         {/* <TableCell align='center'>Trạng thái</TableCell> */}
@@ -397,20 +402,22 @@ const UserTable = () => {
                                 </TableBody>
                                 <TableFooter>
                                     <TableRow>
-                                        <TablePagination className='custom-page'
-                                            rowsPerPageOptions={[5, 15, 25]}
-                                            component="div"
-                                            count={totalUsers}
-                                            rowsPerPage={rowsPerPage}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            sx={{
-                                                display: 'flex',
-                                                alignContent: 'center',
-                                                margin: '0'
-                                            }}
-                                        />
+                                        <TableCell colSpan={6}>
+                                            <TablePagination className='custom-page'
+                                                rowsPerPageOptions={[5, 10, 15, 25]}
+                                                component="div"
+                                                count={totalUsers}
+                                                rowsPerPage={rowsPerPage}
+                                                page={page}
+                                                onPageChange={handleChangePage}
+                                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignContent: 'center',
+                                                    margin: '0'
+                                                }}
+                                            />
+                                        </TableCell>
                                     </TableRow>
                                 </TableFooter>
                             </Table>

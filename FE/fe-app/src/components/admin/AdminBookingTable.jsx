@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Grid, IconButton, Tab, Tabs, Typography } from '@mui/material';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import AdminBookingList from './adminBooking.jsx/AdminBookingList';
 import AdminPayment from './adminBooking.jsx/AdminPayment';
 import AdminPaymentTable from './adminBooking.jsx/AdminPaymentTable';
+import { BookingProvider, useBookingContext } from '../../context/BookingContext';
 
 // Hàm để tạo mảng ngày trong tuần với tên thứ và ngày tháng
 const getDaysOfWeek = (weekOffset) => {
@@ -24,38 +25,28 @@ const getDaysOfWeek = (weekOffset) => {
 };
 
 // Mảng dữ liệu đặt lịch với trạng thái, sử dụng ngày cụ thể
-const bookedSlots = [
-    {
-        date: '2024-11-05', // Ngày cụ thể theo định dạng YYYY-MM-DD
-        start: '06:00',
-        end: '08:00',
-        status: 'booked'
-    },
-    {
-        date: '2024-11-06',
-        start: '14:00',
-        end: '18:00',
-        status: 'pending'
-    },
-    {
-        date: '2024-11-12',
-        start: '19:00',
-        end: '20:00',
-        status: 'pending'
-    },
+let bookedSlots = [
+    // {
+    //     date: '2024-11-05', // Ngày cụ thể theo định dạng YYYY-MM-DD
+    //     start: '06:00',
+    //     end: '08:00',
+    //     status: 'booked'
+    // },
+    // {
+    //     date: '2024-11-06',
+    //     start: '14:00',
+    //     end: '18:00',
+    //     status: 'pending'
+    // },
+    // {
+    //     date: '2024-11-12',
+    //     start: '19:00',
+    //     end: '20:00',
+    //     status: 'pending'
+    // },
 ];
 
-// Hàm kiểm tra trạng thái đặt của một slot dựa trên ngày và khung giờ
-const getSlotStatus = (dateString, timeSlot) => {
-    const [startTime] = timeSlot.split(':');
-    const slot = bookedSlots.find(
-        (slot) =>
-            slot.date === dateString &&
-            startTime >= slot.start &&
-            startTime < slot.end
-    );
-    return slot ? slot.status : null; // Trả về trạng thái của slot hoặc null nếu chưa đặt
-};
+
 
 const AdminBookingTable = () => {
     const [weekOffset, setWeekOffset] = useState(0); // Trạng thái tuần
@@ -66,6 +57,29 @@ const AdminBookingTable = () => {
     const [day, setDay] = useState(null);
     const [timeSlot, setTimeSlot] = useState(null);
     const [value, setValue] = React.useState('one');
+    const { getAllBookings } = useBookingContext();
+
+    useEffect(() => {
+        const fetchBookings = async () => {
+            const data = await getAllBookings();
+            if (data) {
+                bookedSlots = data;
+            }
+        };
+        fetchBookings();
+    }, [])
+
+    // Hàm kiểm tra trạng thái đặt của một slot dựa trên ngày và khung giờ
+    const getSlotStatus = (dateString, timeSlot) => {
+        const [startTime] = timeSlot.split(':');
+        const slot = bookedSlots.find(
+            (slot) =>
+                slot.date === dateString &&
+                startTime > slot.start  &&
+                startTime < slot.end
+        );
+        return slot ? slot.status : null; // Trả về trạng thái của slot hoặc null nếu chưa đặt
+    };
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -104,12 +118,14 @@ const AdminBookingTable = () => {
         <Box sx={{ width: '100%' }}>
             {
                 bookingList ? (
-                    <AdminBookingList
+                    <BookingProvider>
+                        <AdminBookingList
                         dayOfWeek={dayOfWeek}
                         day={day}
                         timeSlot={timeSlot}
                         handleOpenPayment={handleOpenPayment}
                         onClose={handleCloseList} />
+                    </BookingProvider>
                 ) : bookingPayment ? (
                     <AdminPayment onClose={handleBackPayment} />
                 ) : (
@@ -215,6 +231,7 @@ const AdminBookingTable = () => {
                                                     {daysOfWeek.map((dayInfo, colIndex) => {
                                                         const dateString = dayInfo.date.toISOString().split('T')[0]; // Định dạng ngày thành chuỗi 'YYYY-MM-DD'
                                                         const status = getSlotStatus(dateString, timeSlot); // Truyền ngày cụ thể vào hàm kiểm tra trạng thái
+                                                        console.log(timeSlot)
                                                         return (
                                                             <Grid
                                                                 item

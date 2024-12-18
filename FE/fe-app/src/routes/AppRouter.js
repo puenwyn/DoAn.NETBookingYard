@@ -12,10 +12,14 @@ import LinkHeader from "../components/LinkHeader";
 import NotFound from "../pages/client/ErrorPages/NotFound";
 import YardType from "../pages/client/YardType";
 import AdminLogin from '../components/admin/AdminLogIn';
-import { AuthProvider } from "../context/AuthContext";
 import { UserProvider } from "../context/UserContext";
 import ForgotPassword from "../pages/client/ForgotPassword";
 import Wishlist from "../components/Wishlist";
+import { YardProvider } from "../context/YardContext";
+import { BookingProvider } from "../context/BookingContext";
+import { PaymentProvider } from "../context/PaymentContext";
+import { MomoProvider } from "../context/MomoContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export const AppRoutes = () => {
     const location = useLocation();
@@ -25,6 +29,7 @@ export const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route element={
                 <>
                     <Header />
@@ -34,31 +39,41 @@ export const AppRoutes = () => {
                 </>
             }>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/san-the-thao/:id" element={<DetailPage />} />
-                <Route path='/my-cart' element={<CartPage />} />
+                <Route path="/san-the-thao/:id" element={
+                    <YardProvider>
+                        <DetailPage />
+                    </YardProvider>} />
+                <Route path='/my-cart' element={
+                    <MomoProvider>
+                        <PaymentProvider>
+                            <YardProvider>
+                                <BookingProvider>
+                                    <CartPage />
+                                </BookingProvider>
+                            </YardProvider>
+                        </PaymentProvider>
+                    </MomoProvider>
+
+                } />
                 <Route path='/wishlist' element={<Wishlist />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/yard-types/:type" element={<YardType />} />
             </Route>
             <Route path="/auth"
                 element={
-                    <AuthProvider>
+                    <GoogleOAuthProvider clientId="481270872030-0la719tvk2gk12jbcucua620qp4pctpc.apps.googleusercontent.com">
                         <LoginPage />
-                    </AuthProvider>
+                    </GoogleOAuthProvider>
                 } />
             <Route path="/auth/user-info"
                 element={
                     <UserProvider>
-                        <AuthProvider>
-                            <UserInfoPage />
-                        </AuthProvider>
+                        <UserInfoPage />
                     </UserProvider>
                 } />
             <Route path="/auth/forgot-password"
                 element={
-                    <AuthProvider>
-                        <ForgotPassword />
-                    </AuthProvider>
+                    <ForgotPassword />
                 } />
         </Routes>
     );

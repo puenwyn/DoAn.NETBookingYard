@@ -184,11 +184,17 @@ const steps = [
     'Thêm dịch vụ tiện ích'
 ]
 
-export const CustomComboBox = ({ labelTitle, options, error, width, onChange, zIndex }) => {
+export const CustomComboBox = ({ labelTitle, options, error, width, onChange, zIndex, resetValue }) => {
     const [inputValue, setInputValue] = useState(''); // Sử dụng inputValue để lưu ID
     const [inputLabel, setInputLabel] = useState(''); // inputLabel để lưu label hiển thị
     const [isValid, setIsValid] = useState(null);
     const [isTouched, setIsTouched] = useState(false);
+
+    // Reset inputValue khi resetValue thay đổi (khi province, district thay đổi)
+    React.useEffect(() => {
+        setInputValue(''); // Reset inputValue khi có thay đổi
+        setInputLabel('');
+    }, [resetValue]);
 
     const handleChange = (e) => {
         const value = e.target.value;
@@ -250,6 +256,7 @@ export const CustomComboBox = ({ labelTitle, options, error, width, onChange, zI
 };
 
 
+
 const AdminYardDetail = ({ handleClose, handleSave }) => {
     const { createYard } = useYardContext();
     const [activeStep, setActiveStep] = useState(0);
@@ -272,6 +279,7 @@ const AdminYardDetail = ({ handleClose, handleSave }) => {
 
     const [formData, setFormData] = useState({
         name: '',
+        nameTransfermed: '',
         description: '',
         type: '',
         owner: '',
@@ -298,7 +306,8 @@ const AdminYardDetail = ({ handleClose, handleSave }) => {
     const handleFieldChange = (field, value, isValid) => {
         setFormData((prevData) => ({
             ...prevData,
-            [field]: isValid ? value : prevData[field], // Không xóa nếu không hợp lệ
+            [field]: isValid ? value : prevData[field],
+            nameTransfermed: transferText(prevData.name)
         }));
     };
 
@@ -380,13 +389,23 @@ const AdminYardDetail = ({ handleClose, handleSave }) => {
             if (result.isConfirmed) {
                 const dataToSend = new FormData();
                 dataToSend.append('name', formData.name);
-                dataToSend.append('nameTransfermed', transferText(formData.name));
+                dataToSend.append('nameTransfermed', formData.nameTransfermed);
                 dataToSend.append('description', formData.description);
                 dataToSend.append('type', formData.type);
                 dataToSend.append('owner', formData.owner);
                 dataToSend.append('address', formData.address);
-                dataToSend.append('amenities', formData.amenities);
-                dataToSend.append('yardDetails', JSON.stringify(formData.yard_details));
+                formData.amenities.forEach((amenity) => {
+                    dataToSend.append('amenities[]', amenity);
+                });
+
+                formData.yard_details.forEach((yardDetail, index) => {
+                    dataToSend.append(`yardDetails[${index}].name`, yardDetail.name);
+                    dataToSend.append(`yardDetails[${index}].location`, yardDetail.location);
+                    dataToSend.append(`yardDetails[${index}].description`, yardDetail.description);
+                    dataToSend.append(`yardDetails[${index}].capacity`, yardDetail.capacity);
+                    dataToSend.append(`yardDetails[${index}].price`, yardDetail.price);
+                    dataToSend.append(`yardDetails[${index}].pricePeak`, yardDetail.pricePeak);
+                });
 
                 formData.images.forEach((image) => {
                     dataToSend.append('images', image);
@@ -400,8 +419,6 @@ const AdminYardDetail = ({ handleClose, handleSave }) => {
                         icon: 'success',
                         confirmButtonText: 'OK',
                     }).then(() => {
-                        // Reset form hoặc chuyển trang
-                        alert(JSON.stringify(addResult.yard, null, 2));
                         handleSave(addResult.yard);
                         resetForm();
                     });

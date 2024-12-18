@@ -12,24 +12,67 @@ export const YardAdminProvider = ({ children }) => {
     const [error, setError] = useState('');
     const [refresh, setRefresh] = useState(false);
 
+    const [keySearch, setKeySearch] = useState('');
     useEffect(() => {
-        const fetchOwners = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/api/v1/yards/admin-view?page=${page}&size=${rowsPerPage}`);
-                const data = await response.json();
-                setYards(data.yards);
-                setTotalPage(data.totalPages);
-                setTotalYard(data.totalYardAdmin);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
+        if (keySearch === '') {
+            fetchOwners();
+        } else {
+            fetchOwnersBySearch();
         }
-        fetchOwners();
     }, [page, rowsPerPage, refresh])
+
+    const fetchOwnersBySearch = async () => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/Yard/admin/search?key=${keySearch}&pageIndex=${page + 1}&pageSize=${rowsPerPage}`);
+            const data = await response.json();
+            setYards(data.results);
+            setTotalPage(data.totalPages);
+            setTotalYard(data.totalRecords);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchOwners = async () => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/Yard/admin?page=${page}&size=${rowsPerPage}`);
+            const data = await response.json();
+            setYards(data.results);
+            setTotalPage(data.totalPages);
+            setTotalYard(data.totalRecords);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchYardAdminView = async (id) => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/Yard/admin/${id}`);
+            if (!response.ok) {
+                throw new Error("Could not fetch yard details");
+            }
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            setError(err.message);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        setPage(0);
+        if (keySearch === '') {
+            fetchOwners();
+        } else {
+            fetchOwnersBySearch();
+        }
+    }, [keySearch])
     return (
-        <YardAdminContext.Provider value={{ yards, totalPage, page, setPage, rowsPerPage, setRowsPerPage, totalYard, loading, error, setRefresh }}>
+        <YardAdminContext.Provider value={{ yards, totalPage, page, setPage, rowsPerPage, setRowsPerPage, totalYard, loading, error, setRefresh, setKeySearch, keySearch, fetchYardAdminView }}>
             {children}
         </YardAdminContext.Provider>
     )

@@ -38,9 +38,9 @@ const UserInfoDetail = ({ title, info, update }) => {
                 variant="outlined"
                 size="small"
             />
-            <Button onClick={handleEditClick} sx={{ marginLeft: 1 }}>
+            {/* <Button onClick={handleEditClick} sx={{ marginLeft: 1 }}>
                 {isEditing ? 'Save' : 'Edit'}
-            </Button>
+            </Button> */}
         </Box>
     );
 };
@@ -71,11 +71,9 @@ const AdminUserDetail = ({ user }) => {
     return (
         <Box sx={{
             width: '100%',
-            height: '100%',
             padding: 3,
             marginBottom: 3
         }}>
-            {/* Header with background and avatar */}
             <Box sx={{
                 width: '100%',
                 height: '250px',
@@ -141,7 +139,7 @@ const AdminUserDetail = ({ user }) => {
                         >
                             THÔNG TIN CƠ BẢN
                         </Typography>
-                        <UserInfoDetail title="Ngày sinh" info={formatDate(userInfo.birthDate)} />
+                        <UserInfoDetail title="Ngày sinh" info={formatDate(userInfo.dateOfBirth)} />
                         <UserInfoDetail title="Giới tính" info={userInfo.gender === 0 ? 'Nam' : 'Nữ'} />
 
                         <Typography
@@ -155,7 +153,7 @@ const AdminUserDetail = ({ user }) => {
                         >
                             THÔNG TIN LIÊN HỆ
                         </Typography>
-                        <UserInfoDetail title="Số điện thoại" info={userInfo.phone} update={true} />
+                        <UserInfoDetail title="Số điện thoại" info={userInfo.phoneNumber} update={true} />
                         <UserInfoDetail title="Địa chỉ" info={userInfo.address} update={false} />
                         <UserInfoDetail title="Email" info={userInfo.email} update={true} />
                     </Grid2>

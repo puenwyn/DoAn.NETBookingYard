@@ -48,9 +48,6 @@ const AdminDashboard = ({ darkMode }) => {
 
                 </div>
                 <div className='dashboard-basic ms-3'>
-                    <div className='dashboard-weather'>
-                        32 độ C
-                    </div>
                     <div className='dashboard-calendar-pick bg-white'>
                         <MyDatePicker />
                     </div>

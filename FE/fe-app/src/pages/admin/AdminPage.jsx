@@ -17,6 +17,10 @@ import { VoucherProvider } from '../../context/VoucherContext';
 import { YardAdminContext, YardAdminProvider } from '../../context/YardAdminContext';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+import AdminChart from '../../components/admin/AdminChart';
+import { BookingProvider } from '../../context/BookingContext';
+import { YardDetailProvider } from '../../context/YardDetailContext';
+import { YardImageProvider } from '../../context/YardImageContext';
 
 const theme = createTheme({
     typography: {
@@ -61,17 +65,23 @@ const AdminPage = () => {
                 );
             case 'chart':
                 return (
-                    <AdminYardView />
+                    <AdminChart />
                 );
             case 'booking':
-                return <AdminBookingTable />;
+                return <BookingProvider>
+                    <AdminBookingTable />
+                </BookingProvider>;
             case 'account':
                 return <AdminUpdateViewInfo />;
             case 'yard':
                 return (
                     <YardAdminProvider>
                         <YardTypeProvider>
-                            <AdminYardManager />
+                            <YardDetailProvider>
+                                <YardImageProvider>
+                                    <AdminYardManager />
+                                </YardImageProvider>
+                            </YardDetailProvider>
                         </YardTypeProvider>
                     </YardAdminProvider>
                 )

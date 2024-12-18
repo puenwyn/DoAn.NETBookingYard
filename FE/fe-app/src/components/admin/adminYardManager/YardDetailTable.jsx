@@ -6,6 +6,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import '../../../styles/components/adminYardManager.css';
+import { formatNumber } from "../../../utils/FormatNumber";
 
 const useStyles = makeStyles((theme) => ({
     tableheadercus: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Row(props) {
-    const {row, onClick } = props;
+    const { row, onClick } = props;
     const [open, setOpen] = React.useState(false);
     const classes = useStyles();
 
@@ -56,16 +57,19 @@ function Row(props) {
                     </IconButton>
                 </TableCell>
                 <TableCell component="th" scope="row">
+                    <img src={`data:image/png;base64,${row.image}`} style={{ width: '100px', height: '50px', objectFit: 'cover' }} />
+                </TableCell>
+                <TableCell component="th" scope="row">
                     {row.name}
                 </TableCell>
-                <TableCell align="center">{row.yardType}</TableCell>
+                <TableCell align="left">{row.yardType}</TableCell>
                 <TableCell align="left" className={classes.tableAddressColumn}>{row.address}</TableCell>
                 <TableCell align="left" className={classes.tableDesColumn}>{row.description}</TableCell>
-                <TableCell align="center">{row.owner}</TableCell>
+                <TableCell align="left">{row.owner}</TableCell>
                 <TableCell align="center"><IconButton key={row.id} onClick={() => onClick(row.id)} sx={{ fontSize: '16px' }}><BsThreeDotsVertical /></IconButton></TableCell>
             </TableRow>
             <TableRow sx={{ width: '100%', background: '#F7F6F7' }}>
-                <TableCell sx={{ width: '100%' }} style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+                <TableCell sx={{ width: '100%' }} style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
@@ -76,10 +80,10 @@ function Row(props) {
                                     <TableRow>
                                         <TableCell>Tên sân</TableCell>
                                         <TableCell>Khu</TableCell>
-                                        <TableCell align="center">Mô tả</TableCell>
-                                        <TableCell align="center">Sức chứa</TableCell>
-                                        <TableCell align="center">Giá</TableCell>
-                                        <TableCell align="center">Giá giờ vàng</TableCell>
+                                        <TableCell>Mô tả</TableCell>
+                                        <TableCell>Sức chứa</TableCell>
+                                        <TableCell>Giá</TableCell>
+                                        <TableCell>Giá giờ vàng</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -89,15 +93,16 @@ function Row(props) {
                                                 {detail.name}
                                             </TableCell>
                                             <TableCell>{detail.location}</TableCell>
-                                            <TableCell align="center" sx={{
-                                                maxWidth: '150px',
+                                            <TableCell sx={{
+                                                minWidth: '300px',
+                                                maxWidth: '300px',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap',
                                                 overflow: 'hidden'
                                             }}>{detail.description}</TableCell>
-                                            <TableCell align="center">{detail.capacity}</TableCell>
-                                            <TableCell align="center">{detail.price}</TableCell>
-                                            <TableCell align="center">{detail.pricePeak}</TableCell>
+                                            <TableCell align="right">{detail.capacity}</TableCell>
+                                            <TableCell align="right">{formatNumber(detail.price)} VNĐ</TableCell>
+                                            <TableCell align="right">{formatNumber(detail.pricePeak)} VNĐ</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -149,12 +154,13 @@ const CollapsibleTable = ({ yards, page, rowsPerPage, totalYard, setPage, setRow
                 <TableHead>
                     <TableRow className={classes.tableheadercus}>
                         <TableCell />
+                        <TableCell className={classes.tableheaderfont}>Hình sân</TableCell>
                         <TableCell className={classes.tableheaderfont}>Tên sân</TableCell>
-                        <TableCell align="center" className={classes.tableheaderfont}>Loại sân</TableCell>
-                        <TableCell align="center" className={classes.tableheaderfont}>Địa chỉ</TableCell>
-                        <TableCell align="center" className={classes.tableheaderfont}>Mô tả</TableCell>
-                        <TableCell align="center" className={classes.tableheaderfont}>Chủ sở hữu</TableCell>
-                        <TableCell align="center" className={classes.tableheaderfont}>Xem</TableCell>
+                        <TableCell className={classes.tableheaderfont}>Loại sân</TableCell>
+                        <TableCell className={classes.tableheaderfont}>Địa chỉ</TableCell>
+                        <TableCell className={classes.tableheaderfont}>Mô tả</TableCell>
+                        <TableCell className={classes.tableheaderfont}>Chủ sở hữu</TableCell>
+                        <TableCell className={classes.tableheaderfont}>Xem</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -167,7 +173,7 @@ const CollapsibleTable = ({ yards, page, rowsPerPage, totalYard, setPage, setRow
                 <TableRow>
                     <TablePagination
                         className='custom-page'
-                        rowsPerPageOptions={[5, 15, 25]}
+                        rowsPerPageOptions={[5, 10, 15, 25]}
                         component="div"
                         count={totalYard}
                         rowsPerPage={rowsPerPage}

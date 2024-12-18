@@ -4,6 +4,7 @@ import Product from "../../components/Product";
 import ProductSlide from "../../components/ProductSlide";
 import { YardTypeProvider } from "../../context/YardTypeContext";
 import { AddressContext, AddressProvider } from "../../context/AddressContext";
+import { YardProvider } from "../../context/YardContext";
 
 
 const HomePage = () => {
@@ -17,7 +18,9 @@ const HomePage = () => {
             </AddressProvider>
             <Banner />
             <ProductSlide />
-            <Product />
+            <YardProvider>
+                <Product />
+            </YardProvider>
         </>
     );
 };

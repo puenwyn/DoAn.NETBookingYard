@@ -46,7 +46,7 @@ const Navigation = () => {
                                 yardTypes && yardTypes.length > 0 ? (
                                     yardTypes.map(yardType => (
                                         <li key={yardType.id} className="list-inline-item">
-                                            <Link to={`/yard-types/${transferText(yardType.name)}`} aria-label={yardType.name}>
+                                            <Link to={`/yard-types/${transferText(yardType.name)}?id=${yardType.id}`} aria-label={yardType.name}>
                                                 <Button>{yardType.name}</Button>
                                             </Link>
                                         </li>

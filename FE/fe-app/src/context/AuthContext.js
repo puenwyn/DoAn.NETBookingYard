@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     const checkUsernameExists = async (username) => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/users/check-username?username=${username}`);
+            const response = await axios.get(`https://localhost:7071/api/v1/User/check-username?username=${username}`);
             return response.data;
         } catch (err) {
             setError(err);
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkEmailExists = async (email) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/users/check-email/valid?email=${email}`);
+            const response = await axios.get(`https://localhost:7071/api/v1/User/check-email/valid?email=${email}`);
             return response.data;
         } catch (err) {
             setError(err);
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
     const sendResetPasswordEmail = async (username) => {
         setIsLoading(true);
         try {
-            const response = await axios.post(`http://localhost:8080/api/v1/users/sendResetPasswordEmail?username=${username}`);
+            const response = await axios.post(`https://localhost:7071/api/v1/Auth/sendResetPasswordEmail?username=${username}`);
             return response.data;
         } catch (error) {
             console.error("Error sending reset password email:", error);
@@ -46,13 +46,31 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // gửi email cho người dùng xác nhận
+    const resetPassword = async (token, newPassword) => {
+        setIsLoading(true);
+        try {
+            const response = await axios.patch('https://localhost:7071/api/v1/Auth/resetPassword',
+                { newPassword },
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            return response.status === 200;
+        } catch (err) {
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     const sendOtp = async (email) => {
         setIsLoading(true);
         try {
             setOtpStatus('loading');
-            const response = await axios.get(`http://localhost:8080/api/v1/send-otp?email=${email}`, { withCredentials: true });
-            console.log(response)
+            const response = await axios.get(`https://localhost:7071/api/v1/SendEmail/send-otp?email=${email}`, { withCredentials: true });
             if (response.status === 200) {
                 setOtpStatus('sent');
                 return true;
@@ -75,12 +93,10 @@ export const AuthProvider = ({ children }) => {
             alert('Vui lòng nhập mã OTP.');
             return;
         }
-
         setIsLoading(true);
-
         try {
-            const response = await axios.post(`http://localhost:8080/api/v1/verify-otp?email=${email}&otp=${otp}`, {}, { withCredentials: true });
-            if (response.data === true) {
+            const response = await axios.post(`https://localhost:7071/api/v1/SendEmail/verify-otp?email=${email}&otp=${otp}`, {}, { withCredentials: true });
+            if (response.status === 200) {
                 setStatus('Mã OTP chính xác, xác minh thành công');
                 return true;
             } else {
@@ -96,38 +112,16 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const resetPassword = async (token, newPassword) => {
-        setIsLoading(true);
-        try {
-            const response = await axios.patch('http://localhost:8080/api/v1/users/resetPassword',
-                { newPassword },
-                {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            return response.status === 200;
-        } catch (err) {
-            return false;
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
     const checkTokenValidity = async () => {
         try {
             // Gửi yêu cầu mà không cần phải lấy token thủ công, chỉ cần chắc chắn withCredentials là true.
-            const response = await axios.get('http://localhost:8080/api/v1/auth/validate-token', {
+            const response = await axios.get('https://localhost:7071/api/v1/Auth/validate-token', {
                 withCredentials: true,  // Gửi cookie đi với yêu cầu
             });
 
             if (response.status === 200) {
-                console.log("User information:", response.data);
                 return response.data;
             } else {
-                console.log("Token validation failed with status:", response.status);
                 return false;
             }
         } catch (error) {
@@ -141,22 +135,21 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:8080/api/v1/auth/login",
+                "https://localhost:7071/api/v1/Auth/login",
                 { username, password },
                 { withCredentials: true, }
             );
             if (response.status === 200) {
                 setIsAuthenticated(true);
-                return true;
+                return response.data;
             }
-            return false;
+            return response.response.data;
         } catch (error) {
             if (error.response && error.response.data) {
-                setError(error.response.data); // Giả sử backend trả về thông báo lỗi trong `data`
+                return error.response.data;
             } else {
-                setError("Đăng nhập thất bại, vui lòng thử lại!"); // Mặc định nếu không có thông báo lỗi từ backend
+                setError("Đăng nhập thất bại, vui lòng thử lại!"); 
             }
-            return false;
         } finally {
             setIsLoading(false);
         }
@@ -166,7 +159,7 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.post("http://localhost:8080/api/v1/auth/logout", {}, { withCredentials: true });
+            const response = await axios.post("https://localhost:7071/api/v1/Auth/logout", {}, { withCredentials: true });
             if (response.status === 200) {
                 setIsAuthenticated(false); // Đánh dấu người dùng đã đăng xuất
                 return true;

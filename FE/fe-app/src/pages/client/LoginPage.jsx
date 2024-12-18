@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { FaLock, FaEye, FaEyeSlash, FaUser, FaExclamationCircle } from "react-icons/fa";
+import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -29,20 +31,30 @@ const LoginPage = () => {
         e.preventDefault();
         const usernameFrm = username;
         const passwordFrm = password;
-        const result = await login(usernameFrm, passwordFrm);
-        if (result) {
-            Swal.fire({
-                title: "Đăng nhập thành công",
-                text: "Chào mừng bạn đến với đặt sân online!",
-                icon: "success",
-                confirmButtonText: "OK",
-            }).then(() => {
-                navigate('/');
-            });
-        } else {
+        try {
+            const result = await login(usernameFrm, passwordFrm);
+            if (result.isSuccess) {
+                Swal.fire({
+                    title: "Đăng nhập thành công",
+                    text: "Chào mừng bạn đến với đặt sân online!",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    navigate('/');
+                });
+            } else {
+                Swal.fire({
+                    title: "Đăng nhập không thành công",
+                    text: result.message,
+                    icon: "error",
+                    confirmButtonText: "OK",
+                })
+            }
+        } catch (err) {
+            console.log(err)
             Swal.fire({
                 title: "Đăng nhập không thành công",
-                text: error,
+                text: "Đăng nhập không thành công, vui lòng thử lại",
                 icon: "error",
                 confirmButtonText: "OK",
             })
@@ -78,7 +90,7 @@ const LoginPage = () => {
             }
 
         } else if (field === 'password') {
-// Kiểm tra mật khẩu (password)
+            // Kiểm tra mật khẩu (password)
             if (value.length < passwordMinLength) {
                 setFormError(`Mật khẩu phải có ít nhất ${passwordMinLength} ký tự.`);
                 setPassword(value); // Giữ lại giá trị người dùng đã nhập
@@ -121,6 +133,7 @@ const LoginPage = () => {
         }
 
         const usernameExists = await checkUsernameExists(username);
+        console.log(usernameExists)
         if (usernameExists) {
             await Swal.fire({
                 title: 'Tên tài khoản đã tồn tại!',
@@ -143,6 +156,31 @@ const LoginPage = () => {
         setPassword('');
         setPassword2('');
     }
+
+    const handleLoginSuccess = (response) => {
+        const token = response.credential;
+        // Gửi token này đến backend để xác thực và lấy thông tin người dùng
+        axios.post('https://localhost:7071/api/v1/auth/oauth2', { token }, { withCredentials: true })
+            .then((res) => {
+                console.log(res)
+                Swal.fire({
+                    title: "Đăng nhập thành công",
+                    text: "Chào mừng bạn đến với đặt sân online!",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    navigate('/');
+                });
+            })
+            .catch((error) => {
+                console.error('Error during OAuth2 login:', error);
+            });
+    };
+
+    // Callback khi đăng nhập thất bại
+    const handleLoginFailure = (error) => {
+        console.error('Login Failed:', error);
+    };
 
     return (
 
@@ -188,21 +226,27 @@ color: #d9534f; /* Màu đỏ đặc trưng cho lỗi */
                         <div className="remember-forgot d-flex justify-content-around">
                             <a href="/auth/forgot-password" className="text-decoration-none text-center">Quên mật khẩu</a>
                         </div>
-                        <Button type="submit" variant="contained" color="success" className="mt-3">Đăng nhập</Button>
-                        <Button variant="outlined" className="button-custom mt-3">
-                            <img
-                                src="/assets/icons8-google-50.png"
-                                alt="Google Icon"
-                                style={{ width: '20px', height: '20px', marginRight: '8px' }}
-                            />
-                            Đăng nhập bằng Google
-                        </Button>
+                        <Button type="submit" variant="contained" color="success" className="my-3">Đăng nhập</Button>
+                        <GoogleLogin
+                            redirectUri="http://localhost:3000"
+                            onSuccess={handleLoginSuccess}  // Callback khi thành công
+                            onError={handleLoginFailure}     // Callback khi thất bại
+                        >
+                            <Button variant="outlined" className="button-custom mt-3">
+                                <img
+                                    src="/assets/icons8-google-50.png"
+                                    alt="Google Icon"
+                                    style={{ width: '20px', height: '20px', marginRight: '8px' }}
+                                />
+                                Đăng nhập bằng Google
+                            </Button>
+                        </GoogleLogin>
                         <div className="register-link mt-3">
                             <p className=" d-flex justify-content-center">Bạn chưa có tài khoản?<a href="#register" className="ms-2 text-decoration-none">Đăng ký ngay</a></p>
                         </div>
                     </form>
                 </div>
-<div className={`form-box register bg-white py-4 px-5 ${action ? 'hide-register' : 'show-register'}`}>
+                <div className={`form-box register bg-white py-4 px-5 ${action ? 'hide-register' : 'show-register'}`}>
                     <form className="form-custom" action="" onSubmit={handleRegister} style={{ width: '100%' }}>
                         <h2 className="text-center">Đăng ký</h2>
                         <div className="input-box d-flex flex-column justify-content-center align-items-center">
@@ -237,7 +281,7 @@ color: #d9534f; /* Màu đỏ đặc trưng cho lỗi */
                         <Button type="submit" variant="contained" color="success" className="mt-3">Đăng ký tài khoản</Button>
                         <div className="register-link mt-3">
                             <p className=" d-flex justify-content-center">Bạn đã có tài khoản?<a href="#login" className="ms-2 text-decoration-none">Đăng nhập</a></p>
-</div>
+                        </div>
                     </form>
                 </div>
             </div>

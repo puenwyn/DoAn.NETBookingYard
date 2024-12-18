@@ -34,13 +34,10 @@ const AddressPicker = ({ handleChangeAddress, setValid, houseAddressText, fullAd
         if (isValid) {
             setHouseAddress(value);
         } else {
+            setFullAddress('')
             setHouseAddress('');
         }
     };
-
-    useEffect(() => {
-        console.log("Địa chỉ đầy đủ:", fullAddress); // Kiểm tra giá trị fullAddress
-    }, [fullAddress]);
 
     // Sử dụng useEffect để cập nhật fullAddress mỗi khi dữ liệu thay đổi
     useEffect(() => {
@@ -65,21 +62,27 @@ const AddressPicker = ({ handleChangeAddress, setValid, houseAddressText, fullAd
                     error={"Vui lòng chọn"}
                     width={'31%'}
                     onChange={(value) => {
-                        setSelectedProvince(value); // Cập nhật tỉnh/thành phố
+                        setSelectedProvince(value);
+                        setFullAddress(''); // Cập nhật tỉnh/thành phố
                         setSelectedDistrict(''); // Đặt lại quận/huyện khi tỉnh/thành phố thay đổi
-setSelectedWard(''); // Đặt lại phường/xã khi tỉnh/thành phố thay đổi
+                        setSelectedWard(''); // Đặt lại phường/xã khi tỉnh/thành phố thay đổi
                     }}
+                // resetValue={selectedProvince}  // Thêm prop resetValue
                 />
+
                 <CustomComboBox
                     labelTitle={"Chọn quận/huyện *"}
                     options={selectedProvince ? districts.map(district => ({ value: district.code, label: district.name })) : []}
                     error={"Vui lòng chọn"}
                     width={'31%'}
                     onChange={(value) => {
-                        setSelectedDistrict(value); // Cập nhật quận/huyện
+                        setSelectedDistrict(value);
+                        setFullAddress(''); // Cập nhật quận/huyện
                         setSelectedWard(''); // Đặt lại phường/xã khi quận/huyện thay đổi
                     }}
+                    resetValue={selectedProvince}  // Thêm prop resetValue
                 />
+
                 <CustomComboBox
                     labelTitle={"Chọn phường/xã *"}
                     options={selectedDistrict ? wards.map(ward => ({ value: ward.code, label: ward.name })) : []}
@@ -88,7 +91,9 @@ setSelectedWard(''); // Đặt lại phường/xã khi tỉnh/thành phố thay 
                     onChange={(value) => {
                         setSelectedWard(value); // Cập nhật phường/xã
                     }}
+                    resetValue={selectedDistrict}  // Thêm prop resetValue
                 />
+
             </Box>
             <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                 <CustomTextField
@@ -96,9 +101,9 @@ setSelectedWard(''); // Đặt lại phường/xã khi tỉnh/thành phố thay 
                     placeholder={'273A'}
                     password={false}
                     text={houseAddress}
-                    regex={/^[\w\s\u00C0-\u1EF9]*$/u}
+                    regex={/^[\w\s\u00C0-\u1EF9]+$/u}
                     error={'Vui lòng nhập'}
-                    onChange={handleHouseAddressChange} // Sử dụng hàm mới
+                    onChange={(value, isValid) => handleHouseAddressChange(value, isValid)} // Sử dụng hàm mới
                     width={'31%'}
                     setValid={isValid}
                 />

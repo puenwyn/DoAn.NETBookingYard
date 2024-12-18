@@ -13,31 +13,59 @@ export const OwnerProvider = ({ children }) => {
     const [error, setError] = useState('');
     const [ownerSelect, setOwnerSelect] = useState([]);
     const [selectedOwner, setSelectedOwner] = useState(null);
+    const [keySearch, setKeySearch] = useState('');
 
     useEffect(() => {
-        const fetchOwners = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/api/v1/owners?page=${page}&size=${rowsPerPage}`);
-                const data = await response.json();
-                setOwners(data.owners);
-                setTotalPage(data.totalPages);
-                setTotalOwners(data.totalOwners);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
+        if (keySearch === '') {
+            fetchOwners();
+        } else {
+            fetchOwnersBySearch();
         }
-        fetchOwners();
     }, [page, rowsPerPage])
 
-    
+    useEffect(() => {
+        setPage(0);
+        if (keySearch === '') {
+            fetchOwners();
+        } else {
+            fetchOwnersBySearch();
+        }
+    }, [keySearch])
+
+    const fetchOwners = async () => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/owner/admin?pageIndex=${page + 1}&pageSize=${rowsPerPage}`);
+            const data = await response.json();
+            setOwners(data.results);
+            setTotalPage(data.totalPages);
+            setTotalOwners(data.totalRecords);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchOwnersBySearch = async () => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/Owner/admin/search?key=${keySearch}&pageIndex=${page + 1}&pageSize=${rowsPerPage}`);
+            const data = await response.json();
+            setOwners(data.results);
+            setTotalPage(data.totalPages);
+            setTotalOwners(data.totalRecords);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         const fetchOwners = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/v1/owners/select`);
+                const response = await fetch(`https://localhost:7071/api/v1/owner/admin/select`);
                 const data = await response.json();
-                setOwnerSelect(data); // Set đúng data
+                setOwnerSelect(data);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -49,8 +77,9 @@ export const OwnerProvider = ({ children }) => {
 
     const getOwnerDetail = async (id) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/users/${id}`);
-            setSelectedOwner(response.data);
+            const response = await fetch(`https://localhost:7071/api/v1/owner/admin/${id}`);
+            const data = await response.json();
+            return data;
         } catch (err) {
             setError(err.message);
         } finally {
@@ -60,7 +89,7 @@ export const OwnerProvider = ({ children }) => {
 
     const addOwner = async (newOwnerData) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/owners`, {
+            const response = await fetch(`https://localhost:7071/api/v1/owner/admin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +112,7 @@ export const OwnerProvider = ({ children }) => {
 
     const updateOwnerLocked = async (id) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/owners/${id}/isLocked`, {
+            const response = await fetch(`https://localhost:7071/api/v1/owner/admin/${id}/isLocked`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -102,8 +131,31 @@ export const OwnerProvider = ({ children }) => {
         }
     };
 
+    const updateOwner = async (id, owner) => {
+        try {
+            const response = await fetch(`https://localhost:7071/api/v1/owner/admin/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(owner)
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Sửa tài khoản này không thành công!");
+            }
+
+            const updatedOwner = await response.json();
+            setOwners((prevOwners) => prevOwners.map((o) => o.id === updatedOwner.id ? updatedOwner : o));
+            return { status: 'success', updatedOwner };
+        } catch (err) {
+            setError(err.message);
+            return { status: 'error', message: err.message };
+        }
+    };
+
     return (
-        <OwnerContext.Provider value={{ owners, totalPage, page, setPage, rowsPerPage, setRowsPerPage, loading, error, totalOwners, addOwner, updateOwnerLocked, ownerSelect }}>
+        <OwnerContext.Provider value={{ owners, totalPage, page, setPage, rowsPerPage, setRowsPerPage, loading, error, totalOwners, addOwner, updateOwnerLocked, ownerSelect, getOwnerDetail, updateOwner, setKeySearch, keySearch }}>
             {children}
         </OwnerContext.Provider>
     )

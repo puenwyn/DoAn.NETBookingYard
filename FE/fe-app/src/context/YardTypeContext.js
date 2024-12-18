@@ -10,7 +10,7 @@ export const YardTypeProvider = ({ children }) => {
     useEffect(() => {
         const fetchYardTypes = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/v1/yard_types`);
+                const response = await fetch(`https://localhost:7071/api/v1/YardType`);
                 const data = await response.json();
                 setYardTypes(data);
             } catch (err) {
@@ -24,7 +24,7 @@ export const YardTypeProvider = ({ children }) => {
 
     const addYardType = async (newYardTypeData) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/yard_types`, {
+            const response = await fetch(`https://localhost:7071/api/v1/YardType/admin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,8 +49,8 @@ export const YardTypeProvider = ({ children }) => {
 
     const updateYardType = async (id, updateYardType, isDelete) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/yard_types/${id}`, {
-                method: 'PUT',
+            const response = await fetch(`https://localhost:7071/api/v1/YardType/admin/${id}`, {
+                method: isDelete ? 'PATCH' : 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
